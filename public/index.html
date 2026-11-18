@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Form Input Antropometri Balita</title>
+  <!-- Tailwind CDN for quick styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+  <div class="bg-white p-6 rounded shadow-md w-full max-w-lg">
+    <h1 class="text-2xl font-bold mb-4 text-center">Input Data Antropometri</h1>
+    <form id="stuntForm" class="space-y-4">
+      <div>
+        <label class="block font-medium" for="nik">NIK Balita</label>
+        <input type="text" id="nik" name="nik" maxlength="16" pattern="[0-9]{16}" required class="mt-1 w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="1234567890123456" />
+      </div>
+      <div>
+        <label class="block font-medium" for="nama">Nama Lengkap</label>
+        <input type="text" id="nama" name="nama" required class="mt-1 w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      </div>
+      <div>
+        <label class="block font-medium" for="hp">Nomor HP (WhatsApp / SMS)</label>
+        <input type="tel" id="hp" name="hp" pattern="[0-9]{10,15}" required class="mt-1 w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="08123456789" />
+      </div>
+      <div>
+        <span class="block font-medium">Jenis Kelamin</span>
+        <label class="inline-flex items-center mt-1 mr-4">
+          <input type="radio" name="jenis_kelamin" value="L" required class="form-radio" />
+          <span class="ml-2">Laki-laki</span>
+        </label>
+        <label class="inline-flex items-center">
+          <input type="radio" name="jenis_kelamin" value="P" class="form-radio" />
+          <span class="ml-2">Perempuan</span>
+        </label>
+      </div>
+      <div>
+        <label class="block font-medium" for="tanggal_lahir">Tanggal Lahir</label>
+        <input type="date" id="tanggal_lahir" name="tanggal_lahir" required class="mt-1 w-full border rounded px-3 py-2" />
+      </div>
+      <div>
+        <label class="block font-medium" for="tanggal_ukur">Tanggal Ukur</label>
+        <input type="date" id="tanggal_ukur" name="tanggal_ukur" required class="mt-1 w-full border rounded px-3 py-2" />
+      </div>
+      <div>
+        <label class="block font-medium" for="tinggi_cm">Tinggi / Panjang Badan (cm)</label>
+        <input type="number" step="0.1" id="tinggi_cm" name="tinggi_cm" required class="mt-1 w-full border rounded px-3 py-2" />
+      </div>
+      <div>
+        <span class="block font-medium">Posisi Pengukuran</span>
+        <label class="inline-flex items-center mt-1 mr-4">
+          <input type="radio" name="posisi_ukur" value="Berdiri" required class="form-radio" />
+          <span class="ml-2">Berdiri</span>
+        </label>
+        <label class="inline-flex items-center">
+          <input type="radio" name="posisi_ukur" value="Terlentang" class="form-radio" />
+          <span class="ml-2">Terlentang</span>
+        </label>
+      </div>
+      <div class="flex items-center justify-between">
+        <button type="submit" id="submitBtn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none">
+          Simpan
+        </button>
+        <div id="spinner" class="hidden text-blue-600">⏳</div>
+      </div>
+    </form>
+    <div id="message" class="mt-4 text-center"></div>
+  </div>
+
+  <script>
+    // Set default tanggal ukur ke hari ini
+    document.getElementById('tanggal_ukur').valueAsDate = new Date();
+
+    const form = document.getElementById('stuntForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const spinner = document.getElementById('spinner');
+    const messageDiv = document.getElementById('message');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      submitBtn.disabled = true;
+      spinner.classList.remove('hidden');
+      messageDiv.textContent = '';
+
+      const formData = new FormData(form);
+      const payload = Object.fromEntries(formData.entries());
+
+      try {
+        const response = await fetch('/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const result = await response.json();
+        if (result.success) {
+          messageDiv.textContent = '✅ ' + result.message + ' — ' + result.note;
+          form.reset();
+          // Re‑set tanggal ukur to today after reset
+          document.getElementById('tanggal_ukur').valueAsDate = new Date();
+        } else {
+          throw new Error(result.message || 'Error tidak diketahui');
+        }
+      } catch (err) {
+        console.error(err);
+        messageDiv.textContent = '⚠️ Gagal menyimpan data, periksa koneksi Anda.';
+      } finally {
+        submitBtn.disabled = false;
+        spinner.classList.add('hidden');
+      }
+    });
+  </script>
+</body>
+</html>
