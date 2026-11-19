@@ -1,85 +1,81 @@
-function processChat_(chatId, text) {
-  const input = String(text || '').trim();
-  const lower = input.toLowerCase();
+/**
+ * chatbos.gs – Core chatbot logic for Telegram integration.
+ * This file processes incoming Telegram updates and returns a response.
+ */
 
-  if (lower === '/start' || lower === '/help') {
-    const session = getSession_(chatId);
-    return session && session.nim
-      ? 'Silakan pilih informasi yang ingin dilihat.'
-      : 'Selamat datang di Chatbot. Silakan masukkan NIM Anda terlebih dahulu.';
-  }
+/**
+ * Entry point for Telegram webhook updates.
+ * Called from code.gs (doPost) when a payload contains `message`.
+ */
+function handleTelegramUpdate(update) {
+  try {
+    var message = update.message;
+    var chatId = message.chat.id;
+    var text = (message.text || "").trim();
 
-  if (lower === '/reset' || lower === '/logout' || lower === 'ganti nim') {
-    clearSession_(chatId);
-    return 'Sesi telah dihapus. Silakan masukkan NIM Anda.';
-  }
-
-  let session = getSession_(chatId);
-  if (!session || !session.nim) {
-    if (/^\d{5,20}$/.test(input)) {
-      const student = findStudentByNim_(input);
-      if (!student) return 'NIM tidak ditemukan. Periksa kembali NIM Anda.';
-
-      session = saveSession_(chatId, {
-        nim: input,
-        pendingIntent: session && session.pendingIntent || null
-      });
-
-      const greeting = 'Halo ' + student.Nama + '. NIM tersimpan untuk chat ini.';
-      if (session.pendingIntent) {
-        const answer = answerIntent_(student, session.pendingIntent);
-        saveSession_(chatId, { pendingIntent: null });
-        return greeting + '\n\n' + answer;
-      }
-      return greeting + '\nSilakan pilih menu yang tersedia.';
+    // Simple command handling
+    if (text === "/start" || text === "/help") {
+      var helpMsg =
+        "👋 Selamat datang!\n" +
+        "Kirimkan nomor HP (tanpa spasi, contoh: 08123456789) untuk\n" +
+        "menampilkan data balita yang sudah tercatat.";
+      return Telegram.sendMessage(chatId, helpMsg);
     }
 
-    const pendingIntent = detectIntent_(lower);
-    if (pendingIntent) saveSession_(chatId, { pendingIntent: pendingIntent });
-    return 'Silakan masukkan NIM Anda terlebih dahulu.';
+    // Assume the text is a phone number query
+    var hpQuery = text.replace(/\D/g, ""); // keep digits only
+    if (!hpQuery) {
+      return Telegram.sendMessage(
+        chatId,
+        "⚠️ Mohon kirimkan nomor HP yang valid.",
+      );
+    }
+
+    // Search the spreadsheet for the given phone number
+    var record = Sheets.findByPhone(hpQuery);
+    if (!record) {
+      return Telegram.sendMessage(
+        chatId,
+        "❌ Tidak ditemukan data untuk HP " + hpQuery + ".",
+      );
+    }
+
+    // Build response message (using HTML parse mode)
+    var resp =
+      "<b>Data Balita (HP: " +
+      hpQuery +
+      ")</b>\n" +
+      "<b>NIK:</b> " +
+      record.nik +
+      "\n" +
+      "<b>Nama:</b> " +
+      record.nama +
+      "\n" +
+      "<b>Jenis Kelamin:</b> " +
+      record.jenisKelamin +
+      "\n" +
+      "<b>Tanggal Lahir:</b> " +
+      record.tanggalLahir +
+      "\n" +
+      "<b>Tanggal Ukur:</b> " +
+      record.tanggalUkur +
+      "\n" +
+      "<b>Tinggi:</b> " +
+      record.tinggi +
+      " cm\n" +
+      "<b>Posisi Pengukuran:</b> " +
+      record.posisiUkur +
+      "\n" +
+      "<b>Stunting:</b> " +
+      (record.isStunted ? "✅ Ya" : "❌ Tidak");
+
+    return Telegram.sendMessage(chatId, resp, CONFIG.DEFAULT_PARSE_MODE);
+  } catch (e) {
+    // Log error and send generic message back
+    Logger.log("Error in handleTelegramUpdate: " + e.stack);
+    return Telegram.sendMessage(
+      update.message.chat.id,
+      "⚠️ Terjadi error: " + e.message,
+    );
   }
-
-  const intent = detectIntent_(lower);
-  if (!intent) {
-    return 'Saya belum memahami pesan itu. Silakan pilih menu nilai atau kehadiran.';
-  }
-
-  const student = findStudentByNim_(session.nim);
-  if (!student) {
-    clearSession_(chatId);
-    return 'Data NIM pada sesi tidak ditemukan lagi. Silakan masukkan NIM kembali.';
-  }
-
-  saveSession_(chatId, {});
-  return answerIntent_(student, intent);
-}
-
-function detectIntent_(text) {
-  if (/\b(tugas)\b/.test(text)) return 'Tugas';
-  if (/\b(quiz|kuis)\b/.test(text)) return 'Quiz';
-  if (/\b(mid|uts|tengah semester)\b/.test(text)) return 'MID';
-  if (/\b(uas|akhir semester)\b/.test(text)) return 'UAS';
-  if (/\b(absen|absensi|hadir|kehadiran|izin|sakit|alfa|tidak hadir)\b/.test(text)) {
-    return 'Kehadiran';
-  }
-  return null;
-}
-
-function answerIntent_(student, intent) {
-  if (intent === 'Kehadiran') {
-    const attendance = attendanceSummary_(student);
-    if (!attendance.total) return 'Data kehadiran belum tersedia.';
-
-    return 'Kehadiran Anda: hadir ' + attendance.hadir +
-      ', izin ' + attendance.izin +
-      ', sakit ' + attendance.sakit +
-      ', alfa ' + attendance.alfa +
-      '. Persentase hadir ' + attendance.percentage +
-      '% dari ' + attendance.total + ' pertemuan.';
-  }
-
-  const value = student[intent];
-  return value === ''
-    ? 'Nilai ' + intent + ' belum tersedia.'
-    : 'Nilai ' + intent + ' Anda adalah ' + value + '.';
 }

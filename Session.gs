@@ -1,44 +1,34 @@
-function sessionKey_(chatId) {
-  return CHATBOT.SESSION_PREFIX + String(chatId);
-}
+/**
+ * session.gs – Simple per‑chat session storage using UserProperties.
+ *
+ * Set / get / clear session data yang di‑key‑kan dengan chatId.
+ */
+var Session = (function () {
+  var store = PropertiesService.getUserProperties(); // per‑user (script owner)
 
-function getSession_(chatId) {
-  const properties = PropertiesService.getScriptProperties();
-  const raw = properties.getProperty(sessionKey_(chatId));
-  if (!raw) return null;
-
-  try {
-    const session = JSON.parse(raw);
-    const maxAge = CHATBOT.SESSION_TTL_HOURS * 60 * 60 * 1000;
-    if (!session.updatedAt || Date.now() - session.updatedAt > maxAge) {
-      clearSession_(chatId);
-      return null;
-    }
-    return session;
-  } catch (error) {
-    clearSession_(chatId);
-    return null;
+  function _key(chatId) {
+    return "session_" + chatId;
   }
-}
 
-function saveSession_(chatId, changes) {
-  const lock = LockService.getScriptLock();
-  lock.waitLock(5000);
-  try {
-    const current = getSession_(chatId) || {};
-    const session = Object.assign({}, current, changes, {
-      updatedAt: Date.now()
-    });
-    PropertiesService.getScriptProperties().setProperty(
-      sessionKey_(chatId),
-      JSON.stringify(session)
-    );
-    return session;
-  } finally {
-    lock.releaseLock();
+  /** Simpan objek (JSON‑stringified) untuk chatId */
+  function set(chatId, dataObj) {
+    store.setProperty(_key(chatId), JSON.stringify(dataObj));
   }
-}
 
-function clearSession_(chatId) {
-  PropertiesService.getScriptProperties().deleteProperty(sessionKey_(chatId));
-}
+  /** Ambil objek yang tersimpan; kalau tidak ada, kembali null */
+  function get(chatId) {
+    var raw = store.getProperty(_key(chatId));
+    return raw ? JSON.parse(raw) : null;
+  }
+
+  /** Hapus sesi untuk chatId */
+  function clear(chatId) {
+    store.deleteProperty(_key(chatId));
+  }
+
+  return {
+    set: set,
+    get: get,
+    clear: clear,
+  };
+})();

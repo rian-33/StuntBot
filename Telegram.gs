@@ -1,56 +1,60 @@
-function telegramRequest_(method, payload) {
-  const token = getConfig_().telegramToken;
-  if (!token) throw new Error('TELEGRAM_TOKEN belum dikonfigurasi.');
+/**
+ * telegram.gs – Helper functions to talk to Telegram Bot API
+ */
+var Telegram = (function () {
+  var baseUrl = "https://api.telegram.org/bot" + CONFIG.BOT_TOKEN;
 
-  const response = UrlFetchApp.fetch(
-    'https://api.telegram.org/bot' + token + '/' + method,
-    {
-      method: 'post',
-      contentType: 'application/json',
-      payload: JSON.stringify(payload),
-      muteHttpExceptions: true
-    }
-  );
-  const result = JSON.parse(response.getContentText());
-  if (!result.ok) {
-    throw new Error('Telegram API gagal: ' + (result.description || 'unknown error'));
-  }
-  return result;
-}
-
-function sendMessage_(chatId, text, showMenu) {
-  const payload = {
-    chat_id: String(chatId),
-    text: text
-  };
-
-  if (showMenu) {
-    payload.reply_markup = {
-      keyboard: [
-        ['Nilai Tugas', 'Nilai Quiz'],
-        ['Nilai MID', 'Nilai UAS'],
-        ['Kehadiran', 'Ganti NIM']
-      ],
-      resize_keyboard: true
+  /**
+   * Kirim pesan teks ke chat tertentu.
+   *
+   * @param {Number|String} chatId  ID chat (user atau grup)
+   * @param {String}        text    Isi pesan
+   * @param {String}        parseMode  (optional) 'HTML' | 'Markdown' | 'MarkdownV2'
+   */
+  function sendMessage(chatId, text, parseMode) {
+    var payload = {
+      method: "post",
+      contentType: "application/json",
+      muteHttpExceptions: true,
+      payload: JSON.stringify({
+        chat_id: chatId,
+        text: text,
+        parse_mode: parseMode || CONFIG.DEFAULT_PARSE_MODE,
+      }),
     };
+    var url = baseUrl + "/sendMessage";
+    UrlFetchApp.fetch(url, payload);
   }
 
-  return telegramRequest_('sendMessage', payload);
-}
-
-/** Jalankan sekali setelah Web App selesai di-deploy. */
-function setTelegramWebhook() {
-  const config = getConfig_();
-  if (!config.webAppUrl || !config.webhookSecret) {
-    throw new Error('WEB_APP_URL atau WEBHOOK_SECRET belum diisi.');
+  /**
+   * Set webhook URL untuk bot ini (hanya dipanggil sekali saat konfigurasi).
+   *
+   * @param {String} webhookUrl  URL publik yang mengarah ke Web‑App Anda.
+   */
+  function setWebhook(webhookUrl) {
+    var url = baseUrl + "/setWebhook";
+    var opts = {
+      method: "post",
+      contentType: "application/json",
+      muteHttpExceptions: true,
+      payload: JSON.stringify({ url: webhookUrl }),
+    };
+    var resp = UrlFetchApp.fetch(url, opts);
+    Logger.log("setWebhook response: %s", resp.getContentText());
   }
 
-  const result = telegramRequest_('setWebhook', {
-    url: config.webAppUrl + '?key=' + encodeURIComponent(config.webhookSecret),
-    drop_pending_updates: true,
-    max_connections: 1,
-    allowed_updates: ['message']
-  });
-  console.log('Webhook berhasil didaftarkan.');
-  return result;
-}
+  /**
+   * Dapatkan info webhook yang sedang aktif (debug).
+   */
+  function getWebhookInfo() {
+    var resp = UrlFetchApp.fetch(baseUrl + "/getWebhookInfo");
+    Logger.log("WebhookInfo: %s", resp.getContentText());
+  }
+
+  // expose public API
+  return {
+    sendMessage: sendMessage,
+    setWebhook: setWebhook,
+    getWebhookInfo: getWebhookInfo,
+  };
+})();
