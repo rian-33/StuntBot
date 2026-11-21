@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>StuntBot – Login</title>
+  <style>
+    body{font-family:Arial,sans-serif;background:#f2f2f2;display:flex;justify-content:center;align-items:center;height:100vh;}
+    .card{background:#fff;padding:2rem;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,.1);width:320px;}
+    h2{margin-top:0;text-align:center;}
+    input{width:100%;padding:0.6rem;margin:0.5rem 0;border:1px solid #ccc;border-radius:4px;}
+    button{width:100%;padding:0.6rem;background:#0066cc;color:#fff;border:none;border-radius:4px;cursor:pointer;}
+    .error{color:#d00;margin-top:0.5rem;}
+  </style>
+</head>
+<body>
+<div class="card">
+  <h2>Masuk ke StuntBot</h2>
+  <form id="loginForm">
+    <input type="password" id="pwd" placeholder="Kata sandi" required />
+    <button type="submit">Login</button>
+    <div class="error" id="msg"></div>
+  </form>
+</div>
+<script>
+  // GANTI PASSWORD DI BAWAH SESUAI DENGAN CONFIG.WEB_LOGIN_PASSWORD
+  const VALID_PASSWORD = 'stunt2026';
+  const form = document.getElementById('loginForm');
+  const msg  = document.getElementById('msg');
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const entered = document.getElementById('pwd').value.trim();
+    if (entered === VALID_PASSWORD) {
+      localStorage.setItem('stuntbot_logged', 'true');
+      window.location.href = 'home.html';
+    } else {
+      msg.textContent = '❌ Kata sandi salah';
+    }
+  });
+</script>
+</body>
+</html>

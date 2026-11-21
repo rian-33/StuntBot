@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Lihat Data Terbaru – StuntBot</title>
+  <style>
+    body{font-family:Arial,sans-serif;background:#fafafa;margin:0;padding:2rem;}
+    table{border-collapse:collapse;width:100%;max-width:800px;margin:auto;}
+    th,td{border:1px solid #ccc;padding:0.5rem;text-align:left;}
+    th{background:#e0e0e0;}
+    #msg{margin-top:1rem;color:#0066cc;text-align:center;}
+    .logout{position:fixed;top:1rem;right:1rem;background:#d00;color:#fff;padding:0.5rem 1rem;border:none;border-radius:4px;cursor:pointer;}
+  </style>
+</head>
+<body>
+  <button class="logout" onclick="logout()">Keluar</button>
+  <h2 style="text-align:center;">10 Data Terbaru</h2>
+  <div id="msg">Memuat data…</div>
+  <table id="tbl" style="display:none;">
+    <thead>
+      <tr><th>No.</th><th>Nama</th><th>HP</th><th>Stunted</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <script>
+    if (localStorage.getItem('stuntbot_logged') !== 'true') { window.location.href='login.html'; }
+    function logout(){ localStorage.removeItem('stuntbot_logged'); window.location.href='login.html'; }
+    // GANTI URL_DIBAWAH DENGAN URL WEB‑APP ANDA
+    const WEBAPP_URL = 'https://script.google.com/macros/s/YOUR_WEBAPP_ID/exec?view=1';
+    fetch(WEBAPP_URL)
+      .then(r=>r.json())
+      .then(res=>{
+        if (res.status!=='ok') throw new Error('Bad response');
+        const tbody=document.querySelector('#tbl tbody');
+        res.data.forEach((r,i)=>{
+          const tr=document.createElement('tr');
+          tr.innerHTML=`<td>${i+1}</td><td>${r.nama}</td><td>${r.hp}</td><td>${r.isStunted?'✅ Ya':'❌ Tidak'}</td>`;
+          tbody.appendChild(tr);
+        });
+        document.getElementById('msg').style.display='none';
+        document.getElementById('tbl').style.display='table';
+      })
+      .catch(err=>{ document.getElementById('msg').textContent='❌ Gagal memuat data'; });
+  </script>
+</body>
+</html>

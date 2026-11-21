@@ -77,3 +77,21 @@ function doPost(e) {
       .setMimeType(ContentService.MimeType.JSON);
   }
 }
+
+/**
+ * GET endpoint – used by view.html untuk menampilkan 10 data terbaru.
+ * Jika dipanggil tanpa query, hanya mengembalikan teks sederhana.
+ */
+function doGet(e) {
+  // Parameter ?view=1 diminta oleh view.html
+  if (e && e.parameter && e.parameter.view === '1') {
+    var rows = Sheets.getAllRecords(10);
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: 'ok', data: rows }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+  // Jika tidak ada parameter, beri respons teks (bisa di‑redirect ke login page di server)
+  return ContentService
+    .createTextOutput('StuntBot Web Service – GET endpoint')
+    .setMimeType(ContentService.MimeType.TEXT);
+}
