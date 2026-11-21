@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>StuntBot – Home</title>
+  <link rel="stylesheet" href="../../css/home.css">
+</head>
+<body>
+  <div class="header">
+    <h1>StuntBot – Dashboard</h1>
+    <button class="logout" onclick="logout()">Keluar</button>
+  </div>
+  <div class="container">
+    <p>Selamat datang! Pilih tindakan yang ingin Anda lakukan.</p>
+    <a href="../form/form.html" class="btn">📋 Input Data Stunting</a><br>
+    <a href="../view/view.html" class="btn">📊 Lihat 10 Data Terbaru</a>
+  </div>
+  <script>
+    if (localStorage.getItem('stuntbot_logged') !== 'true') {
+      window.location.href = '../login/login.html';
+    }
+    function logout(){
+      localStorage.removeItem('stuntbot_logged');
+      window.location.href = '../login/login.html';
+    }
+  </script>
+</body>
+</html>

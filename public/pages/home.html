@@ -1,0 +1,252 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5faf7">
+  <title>Dashboard | StuntBot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--ink:#183a3b;--muted:#6c8381;--teal:#0c746e;--teal-dark:#075954;--mint:#e9f5ef;--coral:#f5a47e;--line:#dfece6;--paper:#f6faf7;--white:#fff;--shadow:0 16px 45px #1c56500c}
+    *{box-sizing:border-box;scroll-margin-top:95px}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--paper);color:var(--ink);font-family:"DM Sans",Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+    a{color:inherit;text-decoration:none}
+    button{font:inherit;cursor:pointer}
+    .topbar{position:sticky;top:0;z-index:20;border-bottom:1px solid #e4eee9;background:#ffffffed;backdrop-filter:blur(14px)}
+    .nav-wrap{width:min(1160px,calc(100% - 40px));height:76px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:24px}
+    .brand{display:flex;align-items:center;gap:10px;flex:none;font-size:18px;font-weight:800;letter-spacing:-.04em;color:var(--teal-dark)}
+    .brand img{width:40px;height:40px;padding:5px;border:1px solid var(--line);border-radius:13px;background:var(--mint);object-fit:contain}
+    .nav{display:flex;align-items:center;gap:5px}
+    .nav a{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:11px;color:#617b79;font-size:15px;font-weight:650;transition:.2s}
+    .nav a svg{width:17px;height:17px}
+    .nav a:hover,.nav a.active{background:var(--mint);color:var(--teal-dark)}
+    .nav-actions{display:flex;align-items:center;gap:10px}
+    .nav-cta,.logout{height:40px;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 14px;border:0;border-radius:11px;font-size:14px;font-weight:750;transition:.2s}
+    .nav-cta{background:var(--teal);color:#fff}
+    .nav-cta:hover{background:var(--teal-dark);transform:translateY(-1px)}
+    .nav-cta svg,.logout svg{width:16px;height:16px}
+    .logout{background:#f1f6f3;color:#496361}
+    .logout:hover{background:#e5efea;color:var(--teal-dark)}
+    .menu-toggle{display:none;width:42px;height:42px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--teal)}
+    .menu-toggle svg{width:20px;height:20px}
+    .container{width:min(1100px,calc(100% - 40px));margin:auto}
+    .hero{position:relative;display:grid;grid-template-columns:1.13fr .87fr;align-items:center;gap:36px;min-height:440px;margin:34px auto 26px;padding:clamp(30px,5vw,60px);overflow:hidden;border:1px solid #d9eee5;border-radius:30px;background:linear-gradient(120deg,#eaf6ef 0%,#f3faf5 53%,#f8eee4 100%)}
+    .hero:after{position:absolute;content:"";width:370px;height:370px;right:-120px;top:-150px;border:1px solid #0c746e15;border-radius:50%;box-shadow:0 0 0 42px #0c746e08,0 0 0 86px #0c746e05}
+    .hero-copy{position:relative;z-index:1}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;color:var(--teal);font-size:14px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+    .eyebrow svg{width:16px;height:16px}
+    h1{max-width:640px;margin:18px 0 14px;font-size:clamp(37px,5vw,58px);line-height:1.05;letter-spacing:-.06em}
+    .hero-copy p{max-width:590px;margin:0;color:#5c7471;font-size:15px;line-height:1.8}
+    .hero-actions{display:flex;flex-wrap:wrap;gap:11px;margin-top:26px}
+    .button{min-height:48px;display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:0 17px;border:1px solid transparent;border-radius:12px;font-size:15px;font-weight:750;transition:transform .2s,box-shadow .2s,background .2s}
+    .button:hover{transform:translateY(-2px)}
+    .button svg{width:18px;height:18px}
+    .button-primary{background:var(--teal);color:#fff;box-shadow:0 8px 18px #0c746e24}
+    .button-primary:hover{background:var(--teal-dark)}
+    .button-secondary{border-color:#cfe2d9;background:#ffffffb8;color:var(--teal-dark)}
+    .button-secondary:hover{background:#fff;box-shadow:var(--shadow)}
+    .hero-visual{position:relative;z-index:1;min-height:280px;display:grid;place-items:center}
+    .growth-card{position:relative;width:min(100%,350px);padding:25px;border:1px solid #ffffffd9;border-radius:25px;background:#ffffffd9;box-shadow:0 20px 50px #275f5012;transform:rotate(1.5deg);transition:transform .3s}
+    .growth-card:hover{transform:rotate(0) translateY(-4px)}
+    .growth-head{display:flex;align-items:center;justify-content:space-between}
+    .growth-head strong{font-size:15px}
+    .growth-head span{padding:6px 9px;border-radius:999px;background:var(--mint);color:var(--teal);font-size:14px;font-weight:750}
+    .growth-art{height:148px;display:flex;align-items:end;justify-content:center;gap:16px;padding-bottom:12px;border-bottom:1px solid var(--line);background:repeating-linear-gradient(to bottom,transparent 0,transparent 35px,#eaf1ed 36px)}
+    .growth-art .stem{position:relative;width:80px;height:114px;border-radius:40px 40px 13px 13px;background:linear-gradient(180deg,#f8b58d,#f3d2ae)}
+    .growth-art .stem:before{position:absolute;content:"";width:55px;height:55px;left:12px;top:-38px;border-radius:50%;background:#ffd8b8}
+    .growth-art .stem:after{position:absolute;content:"";width:24px;height:9px;left:28px;top:-13px;border-radius:0 0 9px 9px;background:#885d4b}
+    .growth-art .leaf{width:34px;height:18px;margin-bottom:31px;border-radius:100% 0 100% 0;background:#8ac9a6;transform:rotate(-22deg)}
+    .growth-art .leaf.right{transform:scaleX(-1) rotate(-22deg);background:#b6ddb9}
+    .growth-foot{display:flex;justify-content:space-between;margin-top:13px;color:var(--muted);font-size:14px}
+    .growth-foot b{color:var(--teal-dark)}
+    .section{padding:62px 0}
+    .section-heading{max-width:700px;margin-bottom:25px}
+    .section-heading .eyebrow{margin-bottom:11px}
+    h2{margin:0 0 10px;font-size:clamp(26px,3vw,36px);letter-spacing:-.045em}
+    .section-heading p{margin:0;color:var(--muted);font-size:16px;line-height:1.7}
+    .quick-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+    .quick-card{position:relative;display:flex;gap:17px;min-height:172px;padding:24px;border:1px solid var(--line);border-radius:20px;background:var(--white);box-shadow:var(--shadow);transition:transform .22s,border-color .22s,box-shadow .22s}
+    .quick-card:hover{transform:translateY(-4px);border-color:#afd6c8;box-shadow:0 18px 42px #1c565012}
+    .quick-icon{width:48px;height:48px;flex:none;display:grid;place-items:center;border-radius:15px;background:var(--mint);color:var(--teal)}
+    .quick-icon svg{width:23px;height:23px}
+    .quick-card h3{margin:2px 0 8px;font-size:16px}
+    .quick-card p{margin:0 0 15px;color:var(--muted);font-size:14px;line-height:1.65}
+    .card-link{display:inline-flex;align-items:center;gap:7px;color:var(--teal);font-size:14px;font-weight:780}
+    .card-link svg{width:15px;height:15px;transition:transform .2s}
+    .quick-card:hover .card-link svg{transform:translateX(3px)}
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:19px}
+    .info-card{padding:27px;border:1px solid var(--line);border-radius:21px;background:#fff;box-shadow:var(--shadow)}
+    .info-title{display:flex;align-items:center;gap:12px;margin-bottom:15px}
+    .info-title .quick-icon{width:43px;height:43px}
+    .info-title h3{margin:0;font-size:17px}
+    .info-card p{margin:0 0 13px;color:#5f7774;font-size:15px;line-height:1.75}
+    .info-card p:last-child{margin-bottom:0}
+    .fact{margin:18px 0;padding:15px 16px;border-left:3px solid var(--coral);border-radius:0 12px 12px 0;background:#fff7f1;color:#674d3e;font-size:14px;line-height:1.65}
+    .source-note{color:#829592!important;font-size:14px!important}
+    .source-note a{color:var(--teal);text-decoration:underline;text-underline-offset:2px}
+    .about-banner{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:20px;padding:28px;border:1px solid #cce4d9;border-radius:22px;background:linear-gradient(120deg,#e7f4eb,#f8fbf7)}
+    .about-logo{width:72px;height:72px;display:grid;place-items:center;border:1px solid #cce4d9;border-radius:22px;background:#fff}
+    .about-logo img{width:52px;height:52px;object-fit:contain}
+    .about-banner h3{margin:0 0 7px;font-size:20px}
+    .about-banner p{max-width:800px;margin:0;color:#5f7774;font-size:15px;line-height:1.75}
+    .feature-list{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-top:17px}
+    .feature{display:flex;align-items:flex-start;gap:10px;padding:16px;border:1px solid var(--line);border-radius:15px;background:#fff}
+    .feature svg{width:18px;height:18px;flex:none;color:var(--teal)}
+    .feature span{color:#607976;font-size:14px;line-height:1.6}
+    .feature b{display:block;margin-bottom:3px;color:var(--ink);font-size:14px}
+    .disclaimer{margin-top:20px;padding:13px 16px;border:1px solid #f1dfce;border-radius:12px;background:#fff8f1;color:#7b5d48;font-size:14px;line-height:1.6}
+    footer{margin-top:36px;padding:24px 0;border-top:1px solid var(--line);color:#829592;font-size:14px}
+    .footer-wrap{display:flex;justify-content:space-between;gap:16px;align-items:center}
+    .footer-brand{display:flex;align-items:center;gap:8px;color:var(--teal-dark);font-weight:750}
+    .footer-brand img{width:24px;height:24px;object-fit:contain}
+    @media(max-width:850px){.nav-wrap{width:calc(100% - 28px)}.nav{gap:0}.nav a{padding:9px;font-size:14px}.nav a span{display:none}.nav a svg{width:19px;height:19px}.nav-cta{padding:0 11px}.container{width:calc(100% - 32px)}.hero{grid-template-columns:1fr .8fr;gap:15px;padding:34px}.hero-visual{min-height:240px}.growth-card{padding:19px}.feature-list{grid-template-columns:1fr}}
+    @media(max-width:620px){.nav-wrap{height:66px}.menu-toggle{display:grid;place-items:center;order:3}.nav-actions{margin-left:auto}.nav-cta{width:41px;padding:0;font-size:0}.nav-cta svg{width:19px;height:19px}.logout{height:40px;width:40px;padding:0;font-size:0}.logout svg{width:18px;height:18px}.nav{position:absolute;display:none;top:65px;left:14px;right:14px;padding:9px;border:1px solid var(--line);border-radius:16px;background:#fff;box-shadow:0 14px 35px #173a3b18}.nav.open{display:grid;grid-template-columns:1fr}.nav a{padding:12px;font-size:15px}.nav a span{display:inline}.nav a svg{width:18px;height:18px}.container{width:calc(100% - 28px)}.hero{grid-template-columns:1fr;margin-top:18px;padding:29px 22px;border-radius:23px}.hero h1{font-size:42px}.hero-copy p{font-size:16px}.hero-visual{min-height:230px}.growth-card{width:90%;transform:none}.section{padding:43px 0}.quick-grid,.info-grid{grid-template-columns:1fr}.quick-card{min-height:0;padding:19px}.info-card{padding:21px}.about-banner{grid-template-columns:1fr;padding:21px}.about-logo{width:58px;height:58px;border-radius:18px}.about-logo img{width:43px;height:43px}.footer-wrap{align-items:flex-start;flex-direction:column}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
+  </style>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1V10Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V4m0 16h17M8 15l4-4 3 2 5-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 7h3v3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 11v5m0-8h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-form" viewBox="0 0 24 24"><path d="M7 3h8l5 5v13H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M15 3v5h5M9 13h7m-7 4h7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 0 4 22V5.5Zm0 0V20m4-13h8m-8 4h8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 8.8c0 5-8.8 10-8.8 10s-8.8-5-8.8-10A4.7 4.7 0 0 1 12 6.4a4.7 4.7 0 0 1 8.8 2.4Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M5 12h4l2-3 2.2 6 2-3H19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-logout" viewBox="0 0 24 24"><path d="M10 17l5-5-5-5m5 5H3m9-9h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+<header class="topbar">
+  <div class="nav-wrap">
+    <a class="brand" href="#home" aria-label="StuntBot, ke Home"><img src="/assets/logo%20navbar.png" alt=""> <span>StuntBot</span></a>
+    <nav class="nav" id="mainNav" aria-label="Navigasi utama">
+      <a href="#home" class="active"><svg aria-hidden="true"><use href="#i-home"/></svg><span>Home</span></a>
+      <a href="#stunting"><svg aria-hidden="true"><use href="#i-book"/></svg><span>Tentang Stunting</span></a>
+      <a href="#about"><svg aria-hidden="true"><use href="#i-info"/></svg><span>Tentang StuntBot</span></a>
+    </nav>
+    <div class="nav-actions">
+      <a class="nav-cta" href="form.html"><svg aria-hidden="true"><use href="#i-form"/></svg>Input Data</a>
+      <button class="logout" id="logoutButton" type="button"><svg aria-hidden="true"><use href="#i-logout"/></svg>Keluar</button>
+      <button class="menu-toggle" id="menuToggle" type="button" aria-label="Buka navigasi" aria-expanded="false" aria-controls="mainNav"><svg aria-hidden="true"><use href="#i-menu"/></svg></button>
+    </div>
+  </div>
+</header>
+<main class="container">
+  <section class="hero" id="home">
+    <div class="hero-copy">
+      <span class="eyebrow"><svg aria-hidden="true"><use href="#i-heart"/></svg> PEMANTAUAN TUMBUH KEMBANG</span>
+      <h1>Selamat datang di dashboard StuntBot</h1>
+      <p>Home adalah pusat navigasi untuk mulai bekerja. Dari sini, Anda dapat membuka formulir pencatatan antropometri, melihat data terbaru, dan membaca informasi ringkas tentang stunting serta tujuan StuntBot.</p>
+      <div class="hero-actions">
+        <a class="button button-primary" href="form.html"><svg aria-hidden="true"><use href="#i-form"/></svg> Mulai input data</a>
+        <a class="button button-secondary" href="view.html"><svg aria-hidden="true"><use href="#i-chart"/></svg> Lihat data terbaru</a>
+      </div>
+    </div>
+    <div class="hero-visual" aria-hidden="true">
+      <div class="growth-card">
+        <div class="growth-head"><strong>Catatan pertumbuhan</strong><span>Terpantau</span></div>
+        <div class="growth-art"><i class="leaf"></i><div class="stem"></div><i class="leaf right"></i></div>
+        <div class="growth-foot"><span>Ukur · Catat · Pantau</span><b>Setiap langkah berarti</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="quickTitle">
+    <div class="section-heading">
+      <span class="eyebrow">MULAI DARI HOME</span>
+      <h2 id="quickTitle">Apa yang ingin Anda lakukan?</h2>
+      <p>Pilih menu berikut untuk melanjutkan. Setiap halaman dirancang agar alur pencatatan dan peninjauan data mudah ditemukan.</p>
+    </div>
+    <div class="quick-grid">
+      <a class="quick-card" href="form.html">
+        <span class="quick-icon"><svg aria-hidden="true"><use href="#i-form"/></svg></span>
+        <div><h3>Input data balita</h3><p>Catat identitas dan pengukuran antropometri melalui formulir StuntBot.</p><span class="card-link">Buka formulir <svg aria-hidden="true"><use href="#i-arrow"/></svg></span></div>
+      </a>
+      <a class="quick-card" href="view.html">
+        <span class="quick-icon"><svg aria-hidden="true"><use href="#i-chart"/></svg></span>
+        <div><h3>Data terbaru</h3><p>Tinjau daftar data terbaru yang diambil dari layanan Google Apps Script.</p><span class="card-link">Lihat data <svg aria-hidden="true"><use href="#i-arrow"/></svg></span></div>
+      </a>
+    </div>
+  </section>
+
+  <section class="section" id="stunting" aria-labelledby="stuntingTitle">
+    <div class="section-heading">
+      <span class="eyebrow">KENALI LEBIH DEKAT</span>
+      <h2 id="stuntingTitle">Apa itu stunting?</h2>
+      <p>Ringkasan edukasi untuk membantu memahami istilah dan pentingnya pemantauan pertumbuhan anak.</p>
+    </div>
+    <div class="info-grid">
+      <article class="info-card">
+        <div class="info-title"><span class="quick-icon"><svg aria-hidden="true"><use href="#i-book"/></svg></span><h3>Pengertian</h3></div>
+        <p>Stunting adalah kondisi gagal tumbuh pada anak akibat kekurangan gizi kronis dan faktor lain yang berlangsung lama. Kondisi ini dinilai dari panjang atau tinggi badan menurut umur dan jenis kelamin, menggunakan standar pertumbuhan anak.</p>
+        <div class="fact">Menurut standar pertumbuhan WHO, stunting ditandai nilai panjang/tinggi badan menurut umur di bawah −2 standar deviasi dari median standar pertumbuhan.</div>
+        <p class="source-note">Sumber: <a href="https://www.who.int/data/nutrition/nlis/info/malnutrition-in-children/" target="_blank" rel="noreferrer">WHO</a> dan <a href="https://keslan.kemkes.go.id/view_artikel/3959/mengenal-stunting" target="_blank" rel="noreferrer">Kementerian Kesehatan RI</a>.</p>
+      </article>
+      <article class="info-card">
+        <div class="info-title"><span class="quick-icon"><svg aria-hidden="true"><use href="#i-heart"/></svg></span><h3>Mengapa pemantauan penting?</h3></div>
+        <p>Pengukuran yang dilakukan dengan benar dan dicatat berkala membantu petugas kesehatan melihat pola pertumbuhan anak dan menentukan tindak lanjut yang sesuai.</p>
+        <p>Penilaian tidak ditentukan dari tinggi badan saja. Umur, jenis kelamin, cara ukur, serta kurva pertumbuhan yang berlaku perlu diperhitungkan. Konsultasikan hasil pengukuran dengan tenaga kesehatan.</p>
+        <div class="disclaimer">StuntBot adalah alat pencatatan dan pemantauan. Informasi di halaman ini bukan diagnosis atau pengganti konsultasi tenaga kesehatan.</div>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" id="about" aria-labelledby="aboutTitle">
+    <div class="section-heading">
+      <span class="eyebrow">TENTANG KAMI</span>
+      <h2 id="aboutTitle">Tentang StuntBot</h2>
+      <p>Kenali tujuan dan fitur yang tersedia di dashboard ini.</p>
+    </div>
+    <div class="about-banner">
+      <div class="about-logo"><img src="/assets/logo%20navbar.png" alt="Logo StuntBot"></div>
+      <div><h3>Teman pencatatan tumbuh kembang</h3><p>StuntBot adalah aplikasi web sederhana untuk membantu kader dan petugas mencatat data antropometri balita, melihat data terbaru, dan mendukung pemantauan pertumbuhan secara teratur. Nama dan logo StuntBot mewakili bantuan digital yang ramah untuk mendukung perhatian pada tumbuh kembang anak.</p></div>
+    </div>
+    <div class="feature-list">
+      <div class="feature"><svg aria-hidden="true"><use href="#i-check"/></svg><span><b>Pencatatan</b>Mengumpulkan data pengukuran melalui form.</span></div>
+      <div class="feature"><svg aria-hidden="true"><use href="#i-check"/></svg><span><b>Peninjauan</b>Menyediakan akses ke data terbaru yang tersimpan.</span></div>
+      <div class="feature"><svg aria-hidden="true"><use href="#i-check"/></svg><span><b>Integrasi</b>Mengirim data ke Google Apps Script sesuai konfigurasi aplikasi.</span></div>
+    </div>
+  </section>
+</main>
+<footer><div class="container footer-wrap"><div class="footer-brand"><img src="/assets/logo%20navbar.png" alt="">StuntBot</div><span>Catat dengan baik, pantau dengan cermat.</span><a class="card-link" href="#home">Kembali ke atas ↑</a></div></footer>
+<script>
+  if (localStorage.getItem("stuntbot_logged") !== "true") window.location.replace("../index.html");
+
+  const nav = document.getElementById("mainNav");
+  const menuToggle = document.getElementById("menuToggle");
+  const navLinks = [...nav.querySelectorAll("a")];
+
+  menuToggle.addEventListener("click", () => {
+    const open = nav.classList.toggle("open");
+    menuToggle.setAttribute("aria-expanded", String(open));
+    menuToggle.setAttribute("aria-label", open ? "Tutup navigasi" : "Buka navigasi");
+    menuToggle.innerHTML = open ? '<svg aria-hidden="true"><use href="#i-close"/></svg>' : '<svg aria-hidden="true"><use href="#i-menu"/></svg>';
+  });
+
+  navLinks.forEach(link => link.addEventListener("click", () => {
+    nav.classList.remove("open");
+    menuToggle.setAttribute("aria-expanded", "false");
+    menuToggle.setAttribute("aria-label", "Buka navigasi");
+    menuToggle.innerHTML = '<svg aria-hidden="true"><use href="#i-menu"/></svg>';
+  }));
+
+  const sectionObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      navLinks.forEach(link => link.classList.toggle("active", link.hash === "#" + entry.target.id));
+    });
+  }, { rootMargin: "-30% 0px -58% 0px" });
+  ["home", "stunting", "about"].forEach(id => sectionObserver.observe(document.getElementById(id)));
+
+  document.getElementById("logoutButton").addEventListener("click", () => {
+    localStorage.removeItem("stuntbot_logged");
+    window.location.replace("../index.html");
+  });
+</script>
+</body>
+</html>

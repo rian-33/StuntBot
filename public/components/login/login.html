@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>StuntBot – Login</title>
+  <link rel="stylesheet" href="./login.css">
+</head>
+<body>
+<div class="card">
+  <h2>Masuk ke StuntBot</h2>
+  <form id="loginForm">
+    <input type="password" id="pwd" placeholder="Kata sandi" required />
+    <button type="submit">Login</button>
+    <div class="error" id="msg"></div>
+  </form>
+</div>
+
+<script>
+  const VALID_PASSWORD = 'stunt2026';
+  if (localStorage.getItem('stuntbot_logged') === 'true') {
+    window.location.href = '../home/home.html';
+  }
+  const form = document.getElementById('loginForm');
+  const msg  = document.getElementById('msg');
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    if (document.getElementById('pwd').value.trim() === VALID_PASSWORD) {
+      localStorage.setItem('stuntbot_logged', 'true');
+      window.location.href = '../home/home.html';
+    } else {
+      msg.textContent = '❌ Kata sandi salah';
+    }
+  });
+</script>
+</body>
+</html>

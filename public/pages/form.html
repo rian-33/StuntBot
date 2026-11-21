@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+<html lang="id"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#f6faf7">
+<title>Input Data | StuntBot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#183a3b;--muted:#718582;--teal:#0c746e;--teal-dark:#075954;--mint:#e9f5ef;--line:#dceae4;--paper:#f6faf7;--coral:#f2a17b}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:"DM Sans",Inter,"Segoe UI",sans-serif}a{text-decoration:none;color:inherit}button,input,select{font:inherit}
+.topbar{position:sticky;top:0;z-index:5;border-bottom:1px solid #e4eee9;background:#ffffffed;backdrop-filter:blur(12px)}
+.nav{width:min(1080px,calc(100% - 36px));height:70px;margin:auto;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:10px;color:var(--teal-dark);font-weight:800;font-size:17px;letter-spacing:-.04em}.brand img{width:39px;height:39px;padding:5px;border:1px solid var(--line);border-radius:13px;background:var(--mint);object-fit:contain}
+.navlinks{display:flex;gap:7px;align-items:center}.navlinks a,.logout{display:flex;align-items:center;gap:8px;padding:10px 12px;border:0;border-radius:11px;color:#617976;background:transparent;font-size:14px;font-weight:700;cursor:pointer}
+.navlinks a:hover,.navlinks a.active{background:var(--mint);color:var(--teal-dark)}.navlinks svg,.logout svg{width:17px;height:17px}.logout:hover{background:#f5eeeb;color:#9c5944}
+.page{width:min(960px,calc(100% - 36px));margin:42px auto 72px}.intro{margin-bottom:24px}.eyebrow{color:var(--teal);font-size:14px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+h1,h2{font-family:Manrope,"DM Sans",sans-serif;letter-spacing:-.04em}h1{margin:9px 0 7px;font-size:clamp(28px,4vw,38px)}.intro p{margin:0;color:var(--muted);font-size:16px}
+.panel{padding:clamp(22px,4vw,36px);border:1px solid var(--line);border-radius:24px;background:#fff;box-shadow:0 16px 45px #1c56500c}
+.panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding-bottom:22px;border-bottom:1px solid #edf2ef}.panel-head h2{margin:0 0 5px;font-size:20px}.panel-head p{margin:0;color:var(--muted);font-size:14px;line-height:1.6}
+.step{padding:7px 10px;border-radius:999px;background:var(--mint);color:var(--teal);font-size:14px;font-weight:750;white-space:nowrap}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 20px;padding-top:24px}.field{min-width:0}.field.full{grid-column:1/-1}
+.field>label{display:flex;justify-content:space-between;gap:10px;margin-bottom:7px;color:#365957;font-size:14px;font-weight:750}.hint{color:#94a5a2;font-size:14px;font-weight:500}
+.control input,.control select{width:100%;height:47px;padding:0 13px;border:1px solid #d9e6e0;border-radius:11px;outline:none;background:#fff;color:var(--ink);font-size:15px;transition:border .18s,box-shadow .18s}
+.control input::placeholder{color:#a2b1ae}.control input:focus,.control select:focus{border-color:#58a99a;box-shadow:0 0 0 4px #0c746e12}
+.choice{display:flex;align-items:center;gap:9px;min-height:47px}.choice label{margin:0;display:flex;align-items:center;gap:8px;padding:11px 14px;border:1px solid var(--line);border-radius:11px;color:#57706d;font-size:14px;font-weight:650;cursor:pointer}
+.choice input{accent-color:var(--teal)}.choice label:has(input:checked){border-color:#82c1ac;background:var(--mint);color:var(--teal-dark)}
+.status-check{display:flex;align-items:flex-start;gap:11px;padding:15px;border:1px solid #f0dfd0;border-radius:13px;background:#fff8f2}
+.status-check input{width:17px;height:17px;margin:2px 0 0;accent-color:var(--teal)}.status-check strong{display:block;margin-bottom:3px;color:#664d40;font-size:14px}.status-check span{color:#8c7465;font-size:14px;line-height:1.5}
+.form-bottom{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:22px;padding-top:20px;border-top:1px solid #edf2ef}.form-note{max-width:460px;color:#91a19e;font-size:14px;line-height:1.6}
+.submit{min-width:190px;height:47px;display:flex;align-items:center;justify-content:center;gap:9px;border:0;border-radius:11px;background:var(--teal);color:#fff;font-size:14px;font-weight:750;box-shadow:0 7px 16px #0c746e22;transition:.2s}
+.submit:hover{background:var(--teal-dark);transform:translateY(-1px)}.submit:disabled{opacity:.65;cursor:wait;transform:none}.submit svg{width:17px;height:17px}
+.spinner{width:16px;height:16px;border:2px solid #ffffff70;border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+.message{display:none;margin-top:17px;padding:13px 15px;border-radius:11px;font-size:14px;line-height:1.5}.message.show{display:block}.message.success{background:#eaf7f0;color:#176b53}.message.error{background:#fff0ed;color:#a84438}.message a{margin-left:8px;color:inherit;font-weight:750;text-decoration:underline}
+@media(max-width:620px){.nav{height:64px}.navlinks a{padding:9px;font-size:0}.navlinks a svg{width:19px;height:19px}.navlinks a span{display:none}.logout{padding:9px;font-size:0}.logout svg{width:19px;height:19px}.page{margin:28px auto 50px}.form-grid{grid-template-columns:1fr;gap:15px}.field.full{grid-column:auto}.form-bottom{align-items:stretch;flex-direction:column}.submit{width:100%}.panel-head{align-items:center}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style></head><body>
+<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+<symbol id="i-house" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1V10Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+<symbol id="i-table" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M3 10h18M9 4v16m6-10v10" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+<symbol id="i-logout" viewBox="0 0 24 24"><path d="M10 17l5-5-5-5m5 5H3m9-9h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-send" viewBox="0 0 24 24"><path d="m21 3-7.4 18-3.5-7.1L3 10.4 21 3Zm0 0L10.1 13.9" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+<header class="topbar"><div class="nav"><a class="brand" href="home.html"><img src="/assets/logo%20navbar.png" alt=""><span>StuntBot</span></a>
+<nav class="navlinks" aria-label="Navigasi utama"><a href="home.html"><svg aria-hidden="true"><use href="#i-house"/></svg><span>Dashboard</span></a><a href="form.html" class="active" aria-current="page"><svg aria-hidden="true"><use href="#i-send"/></svg><span>Input data</span></a><a href="view.html"><svg aria-hidden="true"><use href="#i-table"/></svg><span>Lihat data</span></a></nav>
+<button class="logout" id="logoutButton" type="button"><svg aria-hidden="true"><use href="#i-logout"/></svg>Keluar</button></div></header>
+<main class="page"><div class="intro"><span class="eyebrow">PENCATATAN ANTROPOMETRI</span><h1>Input data balita</h1><p>Isi pengukuran dengan teliti. Data akan dikirim dan dicatat ke layanan StuntBot.</p></div>
+<section class="panel" aria-labelledby="formTitle"><div class="panel-head"><div><h2 id="formTitle">Informasi pengukuran</h2><p>Lengkapi data identitas dan hasil ukur pada formulir berikut.</p></div><span class="step">FORM DATA</span></div>
+<form id="dataForm"><div class="form-grid">
+<div class="field"><label for="nik">NIK <span class="hint"><span id="nikCount">0</span>/16 digit</span></label><div class="control"><input id="nik" name="nik" inputmode="numeric" autocomplete="off" maxlength="16" pattern="[0-9]{16}" placeholder="Masukkan 16 digit NIK" required></div></div>
+<div class="field"><label for="nama">Nama lengkap</label><div class="control"><input id="nama" name="nama" autocomplete="name" placeholder="Nama anak" required></div></div>
+<div class="field"><label>Jenis kelamin</label><div class="choice"><label><input type="radio" name="jenis_kelamin" value="L" required> Laki-laki</label><label><input type="radio" name="jenis_kelamin" value="P"> Perempuan</label></div></div>
+<div class="field"><label for="hp">Nomor HP orang tua/wali</label><div class="control"><input id="hp" name="hp" type="tel" inputmode="numeric" pattern="[0-9]{8,15}" placeholder="Contoh: 08123456789" required></div></div>
+<div class="field"><label for="tanggal_lahir">Tanggal lahir</label><div class="control"><input id="tanggal_lahir" type="date" name="tanggal_lahir" required></div></div>
+<div class="field"><label for="tanggal_ukur">Tanggal pengukuran</label><div class="control"><input id="tanggal_ukur" type="date" name="tanggal_ukur" required></div></div>
+<div class="field"><label for="tinggi_cm">Panjang/tinggi badan <span class="hint">cm</span></label><div class="control"><input id="tinggi_cm" type="number" name="tinggi_cm" min="0.1" max="200" step="0.1" placeholder="Contoh: 82.5" required></div></div>
+<div class="field"><label for="posisi_ukur">Posisi pengukuran</label><div class="control"><select id="posisi_ukur" name="posisi_ukur" required><option value="">Pilih posisi</option><option value="Berdiri">Berdiri</option><option value="Terlentang">Terlentang</option></select></div></div>
+<div class="field full"><label>Status dari petugas</label><label class="status-check"><input type="checkbox" name="isStunted"><span><strong>Hasil penilaian petugas menunjukkan stunting</strong><span>Centang hanya jika status sudah ditentukan berdasarkan pengukuran dan standar yang berlaku.</span></span></label></div>
+</div><div class="form-bottom"><span class="form-note">Pastikan data sesuai dengan hasil pengukuran. Penentuan status gizi perlu mengikuti standar antropometri dan penilaian tenaga kesehatan.</span><button class="submit" id="submitButton" type="submit"><svg aria-hidden="true"><use href="#i-send"/></svg>Kirim data</button></div><div class="message" id="message" role="status" aria-live="polite"></div></form></section></main>
+<script>
+if(localStorage.getItem("stuntbot_logged")!=="true")window.location.replace("../index.html");
+const form=document.getElementById("dataForm"),button=document.getElementById("submitButton"),message=document.getElementById("message"),measureDate=document.getElementById("tanggal_ukur");
+measureDate.valueAsDate=new Date();measureDate.max=new Date().toISOString().slice(0,10);document.getElementById("tanggal_lahir").max=measureDate.max;
+document.getElementById("nik").addEventListener("input",event=>{event.target.value=event.target.value.replace(/\D/g,"").slice(0,16);document.getElementById("nikCount").textContent=event.target.value.length});
+measureDate.addEventListener("change",event=>{document.getElementById("tanggal_lahir").max=event.target.value||measureDate.max});
+document.getElementById("logoutButton").addEventListener("click",()=>{localStorage.removeItem("stuntbot_logged");window.location.replace("../index.html")});
+form.addEventListener("submit",async event=>{event.preventDefault();message.className="message";if(!form.reportValidity())return;button.disabled=true;button.innerHTML='<span class="spinner" aria-hidden="true"></span>Mengirim data…';const data=Object.fromEntries(new FormData(form));data.isStunted=form.elements.isStunted.checked;
+try{const response=await fetch("/submit",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});const result=await response.json();if(!response.ok||!result.success)throw new Error(result.message||"Data gagal disimpan.");message.className="message success show";message.innerHTML='Data berhasil disimpan. <a href="view.html">Lihat data terbaru</a>';form.reset();measureDate.valueAsDate=new Date();measureDate.max=new Date().toISOString().slice(0,10);document.getElementById("tanggal_lahir").max=measureDate.max;document.getElementById("nikCount").textContent="0"}catch(error){message.className="message error show";message.textContent=error.message||"Gagal mengirim data. Periksa koneksi lalu coba lagi."}finally{button.disabled=false;button.innerHTML='<svg aria-hidden="true"><use href="#i-send"/></svg>Kirim data'}});
+</script></body></html>

@@ -67,9 +67,7 @@ function doPost(e) {
     // ---- 5️⃣ RETURN SUCCESS (JSON) ----
     return ContentService
       .createTextOutput(JSON.stringify({ status: 'ok', hp: hpValue }))
-      .setMimeType(ContentService.MimeType.JSON)
-      .setHeader('Access-Control-Allow-Origin', '*')
-      .setHeader('Access-Control-Allow-Methods', 'POST');
+      .setMimeType(ContentService.MimeType.JSON);
   } catch (err) {
     Logger.log('Error: %s', err.message);
     return ContentService
@@ -83,11 +81,33 @@ function doPost(e) {
  * Jika dipanggil tanpa query, hanya mengembalikan teks sederhana.
  */
 function doGet(e) {
-  // Parameter ?view=1 diminta oleh view.html
   if (e && e.parameter && e.parameter.view === '1') {
-    var rows = Sheets.getAllRecords(10);
+    const SPREADSHEET_ID = '17jQbCJkfOG68SGicnFonP_9EZclxfHQryldIBIf8KNI';
+    const SHEET_NAME = 'HasilPendataan';
+    const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
+    if (!sheet) {
+      return ContentService
+        .createTextOutput(JSON.stringify({ status: 'error', message: 'Sheet not found' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    const lastRow = sheet.getLastRow();
+    const firstRow = Math.max(2, lastRow - 9);
+    const data = lastRow < 2 ? [] : sheet.getRange(firstRow, 1, lastRow - firstRow + 1, 9).getDisplayValues()
+      .reverse()
+      .map(function (row) {
+        return {
+          nama: row[1],
+          jenisKelamin: row[2],
+          tanggalLahir: row[3],
+          tanggalUkur: row[4],
+          tinggiCm: row[5],
+          posisiUkur: row[6],
+          isStunted: String(row[8]).toUpperCase() === 'TRUE'
+        };
+      });
     return ContentService
-      .createTextOutput(JSON.stringify({ status: 'ok', data: rows }))
+      .createTextOutput(JSON.stringify({ status: 'ok', data: data }))
       .setMimeType(ContentService.MimeType.JSON);
   }
   // Jika tidak ada parameter, beri respons teks (bisa di‑redirect ke login page di server)

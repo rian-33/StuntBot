@@ -1,52 +1,63 @@
-const fs = require('fs');
-const path = require('path');
-const fetch = require('node-fetch');
+const fs = require("fs");
+const path = require("path");
+const fetch = require("node-fetch");
+const { createChildRecord } = require("../models/childRecord");
 
-// Path to log file
-const LOG_FILE = path.join(__dirname, '..', 'data.log');
+const LOG_FILE = path.join(__dirname, "..", "data.log");
 
-// Google Sheets endpoint (set via env var or hard‑code here)
-const SHEETS_ENDPOINT = process.env.SHEETS_ENDPOINT || 'https://example.com/your-appscript-endpoint';
-
-// Render the static HTML form
-exports.renderForm = (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
-};
-
-// Handle form submission
-exports.handleSubmit = async (req, res) => {
-  const data = req.body;
-  const nama = data.nama || data.nama_lengkap || 'UNKNOWN';
-  const tinggi = parseFloat(data.tinggi_cm);
-  const tanggalLahir = data.tanggal_lahir;
-  const tanggalUkur = data.tanggal_ukur;
-
-  // Simple age calculation in months
-  const ageMonths = Math.floor((new Date(tanggalUkur) - new Date(tanggalLahir)) / (1000 * 60 * 60 * 24 * 30));
-  // Very simple stunting rule: if height < 75 cm for children < 24 months, flag as stunted
-  const isStunted = ageMonths < 24 && tinggi < 75;
-
-  const logMessage = `data (${nama}) berhasil dimasukkan`;
-  const line = `${new Date().toISOString()} - ${logMessage}\n`;
+exports.handleList = async (req, res) => {
+  const sheetsEndpoint = process.env.SHEETS_ENDPOINT;
+  if (!sheetsEndpoint) {
+    return res.status(503).json({ success: false, message: "SHEETS_ENDPOINT belum dikonfigurasi." });
+  }
 
   try {
-    // Append to local log file
-    fs.appendFileSync(LOG_FILE, line, { encoding: 'utf8' });
-    // Send data to Google Sheets via Apps Script endpoint
-    await fetch(SHEETS_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...data, isStunted })
+    const endpoint = new URL(sheetsEndpoint);
+    endpoint.searchParams.set("view", "1");
+    const response = await fetch(endpoint.toString());
+    if (!response.ok) throw new Error(`Apps Script merespons HTTP ${response.status}.`);
+
+    const result = await response.json();
+    if (result.status !== "ok" || !Array.isArray(result.data)) {
+      throw new Error(result.message || "Format data dari Apps Script tidak valid.");
+    }
+
+    return res.json({ success: true, data: result.data });
+  } catch (error) {
+    console.error("Read records error:", error.message);
+    return res.status(502).json({ success: false, message: "Gagal mengambil data dari Google Sheets." });
+  }
+};
+
+exports.handleSubmit = async (req, res) => {
+  let record;
+  try {
+    record = createChildRecord(req.body);
+  } catch (error) {
+    return res.status(error.statusCode || 400).json({ success: false, message: error.message });
+  }
+
+  const sheetsEndpoint = process.env.SHEETS_ENDPOINT;
+  if (!sheetsEndpoint) {
+    return res.status(503).json({ success: false, message: "SHEETS_ENDPOINT belum dikonfigurasi." });
+  }
+
+  try {
+    const response = await fetch(sheetsEndpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(record),
     });
-    // Respond to client with stunting result
-    res.json({
-      success: true,
-      message: 'Data berhasil disimpan',
-      stunted: isStunted,
-      note: isStunted ? 'Anak terkena stunting' : 'Anak tidak terkena stunting'
-    });
-  } catch (err) {
-    console.error('Logging or Sheets error', err);
-    res.status(500).json({ success: false, message: 'Gagal menyimpan data' });
+    if (!response.ok) throw new Error(`Apps Script merespons HTTP ${response.status}.`);
+
+    const result = await response.json();
+    if (result.status !== "ok") throw new Error(result.message || "Apps Script gagal menyimpan data.");
+
+    const line = `${new Date().toISOString()} - data (${record.nama}) berhasil dimasukkan\n`;
+    fs.appendFileSync(LOG_FILE, line, "utf8");
+    return res.json({ success: true, message: "Data berhasil disimpan", hp: record.hp });
+  } catch (error) {
+    console.error("Submission error:", error.message);
+    return res.status(502).json({ success: false, message: "Gagal menyimpan data ke Google Sheets." });
   }
 };

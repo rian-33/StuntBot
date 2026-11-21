@@ -1,70 +1,73 @@
-# StuntBot Web App – Pemantauan Stunting
+# StuntBot
 
-## Deskripsi
-Aplikasi web **single‑page** sederhana berbasis **Node.js + Express** dengan struktur **MVC** yang rapi:
-- `models/` – tempat model (kosong untuk contoh ini).
-- `controllers/` – logika pengolahan form dan pencatatan log.
-- `views/` – file HTML statis di `public/`.
-- `app.js` – konfigurasi server.
+Aplikasi web Node.js dan Express untuk mencatat data antropometri balita ke Google Sheets melalui Google Apps Script. Dashboard juga menyediakan edukasi ringkas tentang stunting dan halaman data terbaru.
 
-Pengguna dapat mengisi data antropometri balita melalui form. Setelah data berhasil disubmit, server menuliskan baris log ke file `data.log` dengan format:
-```
-2026-11-18T12:00:00.123Z - data (Nama Lengkap) berhasil dimasukkan
-```
-Pesan ini juga dikirim kembali ke browser sebagai notifikasi keberhasilan.
+## Fitur saat ini
 
-## Prasyarat
-- Windows 10/11 (atau Linux/macOS) dengan **Node.js ≥ 20** terinstal.
-- `npm` (disertakan bersama Node).
+- Halaman masuk dan daftar pada halaman utama.
+- Dashboard dengan navigasi SVG, bagian edukasi stunting, dan Tentang StuntBot.
+- Form input data balita dengan validasi browser dan server.
+- Pengiriman data melalui Express ke Google Apps Script.
+- Daftar maksimum 10 catatan terbaru dari Google Sheets, dengan pencarian, filter status, dan muat ulang.
+- Pencatatan hasil submit ke data.log.
 
-## Instalasi
-```powershell
-# 1. Buka terminal di folder proyek
-cd "c:\Users\TUGAS\sistem terdistribusi\StuntBot"
+## Persyaratan
 
-# 2. Install dependensi
-npm install
-```
+- Node.js 20 atau lebih baru.
+- npm.
+- Google Apps Script Web App dengan handler doPost dan doGet sesuai source Code.gs.
+- Google Sheets yang dapat diakses oleh Apps Script.
 
-## Menjalankan Server
-```powershell
-npm start
-```
-Server akan mendengarkan pada port **3000** (atau pada variabel lingkungan `PORT`).
+## Menjalankan aplikasi
 
-## Mengakses dari Perangkat Lain
-1. Cari alamat IP laptop Anda (mis. `ipconfig` → `IPv4 Address`).
-2. Pada perangkat lain di jaringan yang sama, buka browser dan kunjungi:
-```
-http://<ALAMAT_IP_LAPTOP>:3000
-```
-> **Catatan:** Pastikan firewall Windows mengizinkan koneksi masuk pada port 3000 atau non‑aktifkan firewall untuk jaringan lokal.
+1. Pasang dependensi:
 
-## Struktur Direktori
-```
-StuntBot/
-├─ app.js                # Entry point, routing
-├─ package.json
-├─ data.log              # Log hasil input (otomatis dibuat)
-├─ controllers/
-│   └─ formController.js
-├─ models/
-│   └─ index.js          # placeholder
-├─ public/
-│   └─ index.html        # UI form dengan Tailwind CSS
-└─ README.md             # (ini)
-```
+   ```bash
+   npm install
+   ```
 
-## Cara Kerja
-1. Pengguna membuka `/` → halaman `index.html` menampilkan form.
-2. Saat menekan **Simpan**, JavaScript mengirimkan data via **Fetch API** (`POST /submit`).
-3. `formController.handleSubmit` menulis log ke `data.log` dan mengembalikan JSON `{ success: true, message: 'Data berhasil disimpan' }`.
-4. UI menampilkan notifikasi sukses atau error sesuai respons.
+2. Salin .env.example menjadi .env.
+3. Atur PORT dan SHEETS_ENDPOINT. SHEETS_ENDPOINT harus berupa URL deployment Google Apps Script yang digunakan proyek.
+4. Jalankan server:
 
-## Pengembangan Selanjutnya
-- Tambahkan validasi sisi server.
-- Integrasikan dengan Google Apps Script atau Google Sheets untuk penyimpanan terpusat.
-- Tambahkan autentikasi (mis. JWT) bila diperlukan.
+   ```bash
+   npm start
+   ```
 
----
-*Dibuat dengan Antigravity – struktur MVC sederhana, mudah dikelola, dan tidak terlihat “AI‑generated”.*
+5. Buka http://localhost:3000.
+
+Setelah mengubah Code.gs, deploy versi baru Google Apps Script agar perubahan endpoint baca/tulis aktif. Pastikan deployment dan akses spreadsheet telah dikonfigurasi.
+
+## Halaman dan endpoint
+
+- / menyajikan halaman masuk/daftar.
+- /pages/home.html adalah dashboard.
+- /pages/form.html adalah form pencatatan.
+- /pages/view.html menampilkan maksimal 10 data terbaru.
+- POST /submit memvalidasi lalu meneruskan data ke Apps Script.
+- GET /api/records mengambil data terbaru dari Apps Script.
+- Aset statis dilayani dari folder public.
+
+## Validasi form
+
+Server memeriksa NIK 16 digit, nama, jenis kelamin L/P, tanggal yang valid, tanggal ukur tidak lebih awal dari tanggal lahir, tinggi di atas nol, posisi Berdiri/Terlentang, dan nomor HP 8–15 digit. Kotak status stunting adalah nilai dari petugas; aplikasi tidak menghitung status tersebut.
+
+## Struktur proyek
+
+- app.js — server Express dan route.
+- controllers/formController.js — alur submit, baca daftar, integrasi Apps Script, log.
+- models/childRecord.js — normalisasi dan validasi record.
+- public/index.html — halaman masuk dan daftar.
+- public/pages/ — dashboard, form, daftar data, dan redirect login.
+- public/assets/stuntbot-logo.svg — logo.
+- public/components/ dan public/css/ — aset UI lama/alternatif yang belum menjadi bagian dari navigasi utama.
+- Code.gs — endpoint Google Apps Script untuk menulis dan membaca data.
+- Config.gs, Sheets.gs, Session.gs, Chatbot.gs, Telegram.gs — modul Apps Script tambahan; integrasi Telegram belum tersambung pada endpoint utama.
+- prd_web_stunting.md — PRD hasil reverse engineering codebase.
+
+## Catatan konfigurasi dan keamanan
+
+Akun login/daftar saat ini disimpan di localStorage browser dan halaman hanya melakukan pemeriksaan status di sisi client. Ini bukan autentikasi yang aman untuk melindungi data kesehatan dan tidak boleh dianggap sebagai kontrol akses produksi.
+
+Jangan masukkan file .env atau data sensitif ke repository. ID spreadsheet pada Code.gs saat ini ditulis langsung di source dan perlu disesuaikan dengan lingkungan deployment.
+

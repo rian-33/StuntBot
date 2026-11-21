@@ -1,62 +1,152 @@
-# Product Requirements Document (PRD): Web App Pemantauan Stunting
+# Product Requirements Document
+## StuntBot – Pemantauan dan Pencatatan Antropometri Balita
 
-## 1. Pendahuluan
+**Status dokumen:** dokumentasi hasil pembacaan codebase  
+**Versi:** 1.0  
+**Tanggal:** 22 November 2026
 
-**Tujuan Produk:** Membangun aplikasi berbasis web yang responsif sebagai antarmuka utama (klien _front-end_) untuk memasukkan data antropometri balita. Data dari web ini akan terintegrasi langsung dengan Google Sheets (sebagai basis data) melalui _middleware_ Google Apps Script, dan terhubung dengan Bot Telegram untuk kemudahan akses baca dan perbarui data secara _real-time_.
+Dokumen ini menjelaskan fitur dan perilaku yang sudah tampak pada source code proyek. Bagian “Batasan dan pekerjaan lanjutan” membedakan kemampuan yang belum tersedia dari fitur yang sudah berjalan di kode. Dokumen ini bukan klaim bahwa seluruh integrasi eksternal sudah diuji atau aktif.
 
-## 2. Pengguna Sasaran
+## 1. Ringkasan produk
 
-Kader Posyandu dan Petugas Gizi Puskesmas yang memiliki mobilitas tinggi dan membutuhkan alat input data yang cepat, stabil, serta dapat diakses dari peramban (_browser_) perangkat seluler maupun komputer dasar.
+StuntBot adalah aplikasi web berbasis Node.js dan Express untuk membantu petugas mencatat data antropometri balita. Aplikasi menyediakan halaman masuk/daftar, dashboard edukasi, formulir pencatatan, dan daftar maksimal sepuluh data terbaru. Server meneruskan data ke Google Apps Script, yang menulis dan membaca Google Sheets.
 
-## 3. Arsitektur Teknis Web
+Aplikasi juga menyertakan beberapa file Google Apps Script untuk chatbot Telegram, pencarian data, konfigurasi, dan sesi. Namun, integrasi Telegram belum tersambung dengan alur Web App utama.
 
-- **Teknologi Utama:** HTML, CSS (direkomendasikan menggunakan _framework_ Tailwind CSS atau Bootstrap untuk mempercepat pembuatan desain responsif), dan JavaScript murni (_Vanilla JS_).
-- **Metode Komunikasi Jaringan:** Web tidak memiliki peladen _backend_ sendiri, melainkan berkomunikasi langsung dengan titik akhir URL (_endpoint_) _Web App_ Google Apps Script menggunakan antarmuka modern `Fetch API`.
+## 2. Pengguna dan tujuan
 
-## 4. Kebutuhan Fungsional (Functional Requirements)
+### Pengguna utama
 
-### 4.1. Formulir Input Data Antropometri
+- Kader Posyandu dan petugas yang mencatat pengukuran balita.
+- Pengelola proyek yang meninjau data terbaru di Google Sheets.
+- Pengunjung yang membaca informasi umum tentang stunting pada dashboard.
 
-Antarmuka web harus menyediakan formulir yang berfokus pada pengalaman pengguna yang cepat, dengan rincian _input_ berikut untuk mematuhi pedoman pengukuran Kemenkes RI:
+### Tujuan
 
-- **NIK Balita:** Bidang teks bernomor (16 digit angka).
-- **Nama Lengkap:** Bidang teks biasa.
-- **Jenis Kelamin:** Pilihan tombol radio (Laki-laki / Perempuan).
-- **Tanggal Lahir:** Bidang _Date picker_ standar HTML5.
-- **Tanggal Ukur:** Bidang _Date picker_ (secara otomatis diisi dengan tanggal hari ini).
-- **Tinggi/Panjang Badan:** Bidang masukan angka desimal dengan ketelitian hingga 0,1 cm.
-- **Posisi Pengukuran:** Pilihan _dropdown_ atau tombol radio (Berdiri / Terlentang).
+- Memudahkan pengisian identitas dan pengukuran balita.
+- Mengirim data melalui server aplikasi ke Google Apps Script.
+- Menampilkan ringkasan dan daftar sepuluh catatan terbaru.
+- Memberi informasi edukasi umum tentang stunting serta fungsi StuntBot.
 
-### 4.2. Pengiriman Asinkron & Manajemen CORS
+## 3. Ruang lingkup fitur saat ini
 
-- **Tanpa Muat Ulang (_No Reload_):** Saat pengguna mengeklik kirim, eksekusi standar peramban harus dihentikan dan data dikirimkan di latar belakang secara asinkron (pendekatan _Single Page Application_).
-- **Penanganan CORS Lintas Domain:** Untuk menghindari pemblokiran Kebijakan Asal Sama (_CORS preflight error_) dari sistem keamanan peramban terhadap URL Google Apps Script, fungsi JavaScript harus mengemas data objek menjadi format teks biasa. _Fetch_ harus dideklarasikan dengan parameter metode `POST` dan _header_ yang dikonfigurasi sebagai `Content-Type: text/plain;charset=utf-8` alih-alih tipe standar JSON.
+### 3.1 Masuk dan daftar
 
-### 4.3. Manajemen Siklus Antarmuka Pengguna (UI States)
+Halaman utama berada di public/index.html. Pengguna dapat berpindah antara formulir Masuk dan Buat akun, menampilkan/menyembunyikan kata sandi, melihat indikator kekuatan kata sandi, dan memilih untuk mengingat email.
 
-Aplikasi web tidak boleh membiarkan pengguna kebingungan saat menunggu proses. Web harus menangani tiga kondisi mutlak dengan umpan balik visual yang jelas:
+Implementasi akun berada sepenuhnya di browser. Satu objek akun disimpan pada localStorage dengan nama, email, dan kata sandi. Status masuk dicatat sebagai nilai stuntbot_logged. Halaman lain hanya memeriksa nilai tersebut di JavaScript; server tidak membuat sesi dan tidak melindungi route dengan autentikasi.
 
-- **Loading State (Fase Memuat):** Tepat setelah tombol "Simpan" diklik, tombol tersebut harus dinonaktifkan (_disabled_) dan memunculkan indikator animasi (_spinner_) untuk mencegah pengguna menekan tombol berulang kali yang berpotensi menghasilkan data ganda.
-- **Success State (Fase Sukses):** Jika instruksi _fetch_ berhasil dan peladen mengembalikan status jaringan yang baik, kosongkan isian formulir dan tampilkan notifikasi keberhasilan di layar.
-- **Error State (Fase Galat):** Seluruh panggilan jaringan harus dibungkus dalam blok `try...catch`. Jika terjadi koneksi terputus atau galat dari peladen pelaporan, blok tangkapan (_catch_) wajib diaktifkan. Tombol simpan harus diaktifkan kembali dan sistem harus menampilkan pesan peringatan (misalnya: "Gagal menyimpan data, periksa koneksi Anda") dengan mempertahankan nilai yang sudah telanjur diketik oleh pengguna agar dapat segera dicoba lagi.
+### 3.2 Dashboard
 
-## 5. Kebutuhan Non-Fungsional (Non-Functional Requirements)
+Halaman public/pages/home.html menyediakan:
 
-- **Responsivitas Perangkat:** Tata letak layar harus elastis; dapat dibaca dengan jelas di layar ponsel saat kader berada di lapangan, sekaligus terlihat proporsional jika dibuka pada laptop puskesmas.
-- **Beban Komputasi Ringan (_Thin Client_):** Web HTML ini hanya bertugas mengumpulkan data mentah. Semua perhitungan analitik (seperti pencarian usia berdasarkan hitungan bulan penuh, pengurangan koreksi posisi ukur, dan kalkulasi algoritmik _Z-Score_ ke tabel acuan WHO) sama sekali tidak boleh diproses di JavaScript web, melainkan dipusatkan (_centralized_) pada ekosistem _middleware_ Google Apps Script.
+- Pengantar penggunaan dashboard.
+- Tautan menuju form input dan data terbaru.
+- Bagian edukasi stunting.
+- Bagian Tentang StuntBot.
+- Navbar dengan ikon SVG, status menu aktif saat menggulir, menu ponsel, dan tombol Keluar.
 
-## 6. Referensi Skema Payload Data
+Font antarmuka menggunakan DM Sans dan Manrope dari Google Fonts dengan fallback sistem.
 
-Sebagai panduan untuk _programmer_ dalam menyusun fungsi asinkron ke URL web aplikasi (_endpoint_), berikut adalah representasi objek mentah yang nantinya akan dikonversi menggunakan JSON.stringify sebelum ditembakkan lewat _fetch_:
+### 3.3 Form input
 
-```json
-{
-  "nik": "1234567890123456",
-  "nama": "Ahmad",
-  "jenis_kelamin": "L",
-  "tanggal_lahir": "2024-05-10",
-  "waktu_ukur": "2026-11-17",
-  "tinggi_cm": 83.5,
-  "posisi_ukur": "Terlentang"
-}
-```
+Halaman public/pages/form.html menyediakan isian NIK, nama, jenis kelamin, nomor HP wali, tanggal lahir, tanggal pengukuran, panjang/tinggi, posisi ukur, dan kotak status stunting dari petugas.
+
+Form memiliki validasi browser, hitung digit NIK, tanggal ukur awal, indikator pengiriman, pesan berhasil/gagal, dan tautan setelah penyimpanan berhasil. Status stunting berasal dari kotak pilihan petugas; kode tidak menghitung status menggunakan kurva antropometri.
+
+### 3.4 Daftar data terbaru
+
+Halaman public/pages/view.html:
+
+- Memuat data melalui endpoint Node GET /api/records.
+- Menampilkan paling banyak sepuluh catatan terbaru.
+- Menyediakan pencarian berdasarkan nama, jenis kelamin, dan posisi ukur.
+- Menyediakan filter untuk semua, ditandai, dan tidak ditandai.
+- Menyediakan tombol muat ulang, indikator loading, keadaan kosong, dan pesan error.
+- Tidak menampilkan NIK dan nomor HP pada tabel.
+
+### 3.5 Pencatatan log
+
+Setelah Apps Script menyatakan submit berhasil, controller menambahkan waktu UTC dan nama ke data.log. Log ini bukan sumber untuk halaman daftar data; daftar dibaca dari Google Sheets.
+
+## 4. Alur utama
+
+### Menyimpan catatan
+
+1. Pengguna mengisi form dan browser memeriksa batasan input.
+2. Browser mengirim JSON ke POST /submit pada server Express.
+3. Model membuat bentuk data konsisten dan memvalidasi data.
+4. Controller mengirim JSON ke SHEETS_ENDPOINT.
+5. Google Apps Script menambahkan satu baris pada sheet HasilPendataan.
+6. Setelah respons Apps Script berstatus ok, server menambahkan catatan ke data.log dan mengirim respons sukses ke browser.
+
+### Membaca catatan
+
+1. Halaman data meminta GET /api/records.
+2. Controller Node menambahkan parameter view=1 ke SHEETS_ENDPOINT dan meneruskan permintaan.
+3. Code.gs mengambil sepuluh baris terakhir dari sheet, membalik urutan menjadi terbaru dahulu, lalu mengembalikan JSON.
+4. Halaman menerapkan pencarian/filter pada hasil tersebut dan menampilkan tabel.
+
+## 5. Data dan validasi
+
+### Payload form
+
+| Field | Aturan model saat ini |
+|---|---|
+| nik | Wajib, tepat 16 digit |
+| nama | Wajib, setelah spasi awal/akhir dibuang |
+| jenis_kelamin | Wajib, L atau P |
+| tanggal_lahir | Wajib, format tanggal YYYY-MM-DD yang valid |
+| tanggal_ukur | Wajib, tanggal valid dan tidak sebelum tanggal lahir |
+| tinggi_cm | Wajib, angka lebih dari 0 |
+| posisi_ukur | Wajib, Berdiri atau Terlentang |
+| hp | Wajib, 8–15 digit |
+| isStunted | Boolean dari kotak pilihan; tidak dihitung oleh model |
+
+### Kolom Google Sheets
+
+Code.gs menulis sembilan kolom dengan urutan: NIK, Nama Lengkap, Jenis Kelamin, Tanggal Lahir, Tanggal Ukur, Tinggi (cm), Posisi Pengukuran, Nomor HP, dan Stunted? (TRUE/FALSE).
+
+Endpoint daftar hanya mengirim nama, jenis kelamin, tanggal lahir, tanggal ukur, tinggi, posisi ukur, dan status. NIK serta nomor HP tidak disertakan dalam respons daftar.
+
+## 6. API aplikasi
+
+| Method | Path | Fungsi |
+|---|---|---|
+| GET | / | Menyajikan halaman login dari public/index.html |
+| POST | /submit | Memvalidasi dan meneruskan data form ke Apps Script |
+| GET | /api/records | Meminta sepuluh data terbaru dari Apps Script |
+| GET | file di public | Menyajikan halaman dan aset statis |
+
+Controller mengembalikan HTTP 400 untuk data tidak valid, 503 bila SHEETS_ENDPOINT tidak diatur, dan 502 bila integrasi Apps Script gagal.
+
+## 7. Arsitektur dan konfigurasi
+
+- app.js: server Express, middleware JSON/form, aset statis, dan route API.
+- controllers/formController.js: validasi melalui model, komunikasi Apps Script, dan penulisan log lokal.
+- models/childRecord.js: normalisasi dan validasi payload balita.
+- public/: halaman HTML, logo SVG, CSS, dan komponen UI.
+- Code.gs: Web App Google Apps Script untuk menulis dan membaca sheet.
+- Config.gs, Sheets.gs, Session.gs, Chatbot.gs, Telegram.gs: modul Apps Script tambahan.
+- .env: konfigurasi lokal, terutama PORT dan SHEETS_ENDPOINT.
+- .env.example: contoh nama konfigurasi tanpa kredensial proyek.
+
+Spreadsheet ID dan nama sheet untuk endpoint Code.gs saat ini ditulis langsung di source Code.gs. SHEETS_ENDPOINT harus menunjuk ke URL Web App Apps Script yang sesuai.
+
+## 8. Batasan dan pekerjaan lanjutan yang tampak dari codebase
+
+- Autentikasi berbasis localStorage bukan pengamanan server. Kata sandi akun disimpan di browser; API dan halaman statis tidak dilindungi server. Implementasi ini hanya cocok sebagai prototipe lokal, bukan perlindungan data kesehatan untuk penggunaan produksi.
+- Aplikasi menerima status stunting dari kotak pilihan petugas. Belum ada perhitungan Z-score atau penilaian otomatis; informasi dashboard bukan diagnosis.
+- Halaman data membatasi respons menjadi sepuluh catatan terakhir dan tidak menyediakan pagination atau pencarian seluruh riwayat.
+- Apps Script perlu dideploy ulang setelah perubahan Code.gs agar endpoint terpasang menjalankan versi terbaru.
+- File public/components berisi UI lama yang tidak digunakan navigasi utama dan beberapa tautannya tidak lengkap.
+- Modul Telegram belum tersambung ke doPost utama. Chatbot.gs dan Telegram.gs merujuk CONFIG, sedangkan Config.gs menyediakan CHATBOT dan getConfig_; Sheets.gs juga merujuk CONFIG. Fungsi-fungsi tersebut perlu diselaraskan sebelum integrasi Telegram dapat dianggap siap.
+- Dependensi body-parser tercantum di package.json, tetapi app.js kini menggunakan parser bawaan Express.
+
+## 9. Kebutuhan kualitas UI yang diimplementasikan
+
+- Layout form dan halaman data responsif untuk desktop dan ponsel.
+- Loading, sukses, error, dan empty state disediakan untuk alur utama.
+- Kontrol pencarian dan filter dapat digunakan tanpa memuat ulang halaman.
+- Ikon dan logo disediakan dalam SVG.
+- Font DM Sans dan Manrope dimuat dari Google Fonts; fallback sistem digunakan jika font eksternal tidak tersedia.
