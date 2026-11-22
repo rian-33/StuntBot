@@ -1,0 +1,42 @@
+body {
+  font-family:Arial,sans-serif;
+  background:#fafafa;
+  margin:0;
+  padding:2rem;
+}
+table {
+  border-collapse:collapse;
+  width:100%;
+  max-width:800px;
+  margin:auto;
+}
+th,td {
+  border:1px solid #ccc;
+  padding:0.5rem;
+  text-align:left;
+}
+th {
+  background:#e0e0e0;
+}
+#msg {
+  margin-top:1rem;
+  color:#0066cc;
+  text-align:center;
+}
+.logout {
+  position:fixed;
+  top:1rem;
+  right:1rem;
+  background:#d00;
+  color:#fff;
+  padding:0.5rem 1rem;
+  border:none;
+  border-radius:4px;
+  cursor:pointer;
+}
+.view-title {
+  text-align:center;
+}
+#tbl {
+  display:none;
+}

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
@@ -8,87 +8,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root{color-scheme:light;--ink:#173a3b;--muted:#718687;--teal:#0c746e;--teal-dark:#075954;--mint:#e8f5ef;--line:#dce9e5;--coral:#f49a72;--paper:#f7faf7}
-    *{box-sizing:border-box}
-    body{margin:0;min-height:100vh;font-family:"DM Sans",Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--paper)}
-    h1,h2,h3{font-family:Manrope,"DM Sans",sans-serif}
-    button,input{font:inherit}
-    button{cursor:pointer}
-    .shell{min-height:100vh;display:grid;grid-template-columns:minmax(340px,1fr) minmax(440px,1fr)}
-    .story{position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:42px clamp(32px,6vw,92px);color:#fff;background:linear-gradient(145deg,#075954 0%,#0c746e 54%,#168d7c 100%)}
-    .story:before,.story:after{position:absolute;content:"";border:1px solid #ffffff20;border-radius:50%;pointer-events:none}
-    .story:before{width:480px;height:480px;right:-210px;top:20%}
-    .story:after{width:650px;height:650px;right:-300px;top:12%}
-    .brand{position:relative;z-index:1;display:flex;align-items:center;gap:12px;font-size:18px;font-weight:760;letter-spacing:-.04em}
-    .brand-mark{width:44px;height:44px;display:grid;place-items:center;border:1px solid #ffffff42;border-radius:15px;background:#ffffff16}
-    .brand-mark img{width:31px;height:31px;object-fit:contain}
-    .story-content{position:relative;z-index:1;max-width:520px;margin:64px 0}
-    .story-art{position:absolute;right:40px;bottom:165px;z-index:1;width:min(23vw,280px);pointer-events:none}
-    .story-art img{display:block;width:100%;height:auto;object-fit:contain;filter:drop-shadow(0 18px 22px #002d3240);animation:login-float 4.2s ease-in-out infinite}
-    @keyframes login-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
-    .eyebrow{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid #ffffff36;border-radius:999px;background:#ffffff12;color:#ddf7ed;font-size:14px;font-weight:650;letter-spacing:.04em}
-    .eyebrow svg{width:15px;height:15px}
-    h1{max-width:500px;margin:23px 0 16px;font-size:clamp(38px,5vw,64px);line-height:1.04;letter-spacing:-.055em}
-    .story-copy{max-width:440px;margin:0;color:#d0e9e2;font-size:16px;line-height:1.75}
-    .illustration{position:relative;z-index:1;display:flex;align-items:center;gap:14px;max-width:380px;padding:15px 17px;border:1px solid #ffffff30;border-radius:20px;background:#ffffff12;backdrop-filter:blur(8px)}
-    .illustration-icon{width:42px;height:42px;flex:none;display:grid;place-items:center;border-radius:14px;background:#f5b38b;color:#563a2a}
-    .illustration-icon svg{width:23px;height:23px}
-    .illustration strong{display:block;font-size:15px}
-    .illustration span{display:block;margin-top:4px;color:#d0e9e2;font-size:14px}
-    .story-foot{position:relative;z-index:1;color:#c1ded7;font-size:14px}
-    .auth-side{display:grid;place-items:center;padding:38px 28px}
-    .auth-wrap{width:min(100%,440px)}
-    .mobile-brand{display:none}
-    .welcome{margin-bottom:27px}
-    .welcome h2{margin:0 0 8px;font-size:30px;letter-spacing:-.04em}
-    .welcome p{margin:0;color:var(--muted);font-size:16px;line-height:1.6}
-    .card{padding:30px;border:1px solid #e5eeea;border-radius:24px;background:#fff;box-shadow:0 18px 60px #1c56500d}
-    .tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:5px;margin-bottom:25px;border-radius:13px;background:#f0f6f3}
-    .tab{min-height:42px;border:0;border-radius:10px;background:transparent;color:#718687;font-size:15px;font-weight:700;transition:background .2s,color .2s,box-shadow .2s}
-    .tab[aria-selected=true]{background:#fff;color:var(--teal-dark);box-shadow:0 2px 8px #174c4414}
-    .form{animation:enter .28s ease both}
-    @keyframes enter{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
-    .form[hidden]{display:none}
-    .form-title{margin:0 0 5px;font-size:18px;letter-spacing:-.025em}
-    .form-subtitle{margin:0 0 20px;color:var(--muted);font-size:15px}
-    .field{margin:0 0 15px}
-    .field label{display:block;margin:0 0 7px;font-size:14px;font-weight:700;color:#365758}
-    .control{position:relative}
-    .control>.leading{position:absolute;left:13px;top:50%;width:18px;height:18px;transform:translateY(-50%);color:#849b99;pointer-events:none}
-    .control input{width:100%;height:48px;padding:0 44px 0 42px;border:1px solid var(--line);border-radius:12px;outline:0;background:#fff;color:var(--ink);font-size:15px;transition:border .2s,box-shadow .2s}
-    .control input::placeholder{color:#a0b0af}
-    .control input:focus{border-color:#48a69b;box-shadow:0 0 0 4px #0c746e14}
-    .reveal{position:absolute;right:8px;top:50%;width:34px;height:34px;display:grid;place-items:center;transform:translateY(-50%);border:0;border-radius:9px;background:transparent;color:#77908d}
-    .reveal:hover{background:#edf6f2;color:var(--teal)}
-    .reveal svg{width:17px;height:17px}
-    .form-meta{display:flex;justify-content:space-between;align-items:center;margin:2px 0 19px;font-size:14px}
-    .check{display:flex;align-items:center;gap:8px;color:#58706e}
-    .check input{width:15px;height:15px;margin:0;accent-color:var(--teal)}
-    .text-link{border:0;background:none;color:var(--teal);font-size:14px;font-weight:700;text-decoration:none}
-    .text-link:hover{color:var(--teal-dark);text-decoration:underline}
-    .primary{width:100%;height:49px;display:flex;align-items:center;justify-content:center;gap:9px;border:0;border-radius:12px;background:var(--teal);color:#fff;font-size:15px;font-weight:750;box-shadow:0 8px 16px #0c746e26;transition:transform .18s,background .18s,box-shadow .18s}
-    .primary:hover{transform:translateY(-1px);background:var(--teal-dark);box-shadow:0 11px 19px #0c746e30}
-    .primary:active{transform:translateY(0)}
-    .primary svg{width:17px;height:17px}
-    .notice{min-height:20px;margin:12px 0 0;font-size:14px;line-height:1.5}
-    .notice.error{color:#bd4b40}.notice.success{color:#087d68}
-    .strength{display:flex;align-items:center;gap:8px;margin-top:7px;color:#849694;font-size:14px}
-    .strength-bar{height:4px;flex:1;overflow:hidden;border-radius:9px;background:#edf2ef}
-    .strength-bar i{display:block;width:0;height:100%;border-radius:9px;background:#e5a154;transition:width .2s,background .2s}
-    .legal{margin:17px 0 0;text-align:center;color:#91a19f;font-size:14px;line-height:1.6}
-    .switch-copy{margin:19px 0 0;text-align:center;color:var(--muted);font-size:14px}
-    .switch-copy button{padding:0;border:0;background:none;color:var(--teal);font-weight:750}
-    .switch-copy button:hover{text-decoration:underline}
-    @media(max-width:850px){.shell{grid-template-columns: minmax(280px,.82fr) minmax(420px,1.18fr)}.story{padding:34px}.story-content{margin:48px 0}.story h1{font-size:48px}}
-    @media(max-width:1600px) and (min-width:1101px){.story-art{right:28px;bottom:150px;width:min(17vw,225px)}.story-content{max-width:calc(100% - 240px);margin:42px 0}.story h1{font-size:clamp(36px,3.2vw,44px)}}
-    @media(max-width:1100px){.story-art{display:none}}
-    @media(max-width:680px){.shell{display:block}.story{display:none}.auth-side{min-height:100vh;padding:28px 20px;align-content:center}.mobile-brand{display:flex;align-items:center;gap:10px;margin:0 0 30px;font-weight:780;color:var(--teal-dark)}.mobile-brand .brand-mark{border-color:#d8ebe4;background:#e9f5ef}.mobile-brand svg{color:var(--teal)}.welcome h2{font-size:27px}.card{padding:23px 20px;border-radius:20px}}
-    @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
-  </style>
+  <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
-<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+<svg xmlns="http://www.w3.org/2000/svg" class="icon-sprite" aria-hidden="true">
   <symbol id="icon-spark" viewBox="0 0 24 24"><path d="m12 2 1.7 6.3L20 10l-6.3 1.7L12 18l-1.7-6.3L4 10l6.3-1.7L12 2Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="m19 15 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z" fill="currentColor"/></symbol>
   <symbol id="icon-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="m4 7 8 6 8-6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="icon-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M5 20c.7-3.5 3-5.3 7-5.3s6.3 1.8 7 5.3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
@@ -99,7 +22,6 @@
 </svg>
 <main class="shell">
   <aside class="story" aria-label="Tentang StuntBot">
-    <div class="brand"><span class="brand-mark"><img src="/assets/logo%20navbar.png" alt=""></span><span>StuntBot</span></div>
     <div class="story-art" aria-hidden="true"><img src="/assets/Tampilan%20Login.png" alt=""></div>
     <div class="story-content">
       <span class="eyebrow"><svg aria-hidden="true"><use href="#icon-spark"/></svg> PEDULI TUMBUH KEMBANG</span>
@@ -113,7 +35,6 @@
   </aside>
   <section class="auth-side">
     <div class="auth-wrap">
-      <div class="mobile-brand"><span class="brand-mark"><img src="/assets/logo%20navbar.png" alt=""></span>StuntBot</div>
       <header class="welcome"><h2 id="welcomeTitle">Selamat datang kembali</h2><p id="welcomeCopy">Masuk untuk melanjutkan pemantauan tumbuh kembang.</p></header>
       <div class="card">
         <div class="tabs" role="tablist" aria-label="Pilih akses">
