@@ -1,0 +1,10 @@
+# StuntBot is a plain Node.js/Express app (npm, no framework, no compile step).
+# Netlify installs dependencies from package-lock.json automatically, so no
+# build command is needed. Static assets are served from public/ by the CDN,
+# and the Express API runs as a Netlify Server (netlify/server/index.mjs).
+[build]
+  publish = "public"
+
+[build.environment]
+  # Netlify Server requires Node.js 24 or later.
+  NODE_VERSION = "24"
