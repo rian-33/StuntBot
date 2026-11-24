@@ -1,0 +1,175 @@
+﻿<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f4f8f5">
+    <title>Admin | StuntBot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="admin-ui.css">
+    <link rel="stylesheet" href="admin-theme.css">
+  </head>
+  <body>
+    <svg class="icon-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <symbol id="i-home" viewBox="0 0 24 24">
+        <path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1V10Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="a-shield" viewBox="0 0 24 24">
+        <path d="M12 3 20 6v5c0 5-3.4 8.5-8 10-4.6-1.5-8-5-8-10V6l8-3Z" />
+        <path d="m9 12 2 2 4-4" />
+      </symbol>
+      <symbol id="a-records" viewBox="0 0 24 24">
+        <rect x="4" y="3" width="16" height="18" rx="2" />
+        <path d="M8 8h8M8 12h8M8 16h5" />
+      </symbol>
+      <symbol id="a-calendar" viewBox="0 0 24 24">
+        <rect x="3" y="5" width="18" height="16" rx="2" />
+        <path d="M16 3v4M8 3v4M3 10h18m-13 4h3m-3 3h6" />
+      </symbol>
+      <symbol id="a-arrow" viewBox="0 0 24 24">
+        <path d="M5 12h14m-6-6 6 6-6 6" />
+      </symbol>
+      <symbol id="i-logout" viewBox="0 0 24 24">
+        <path d="M10 17l5-5-5-5m5 5H3m9-9h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="a-trash" viewBox="0 0 24 24">
+        <path d="M4 7h16m-10 4v6m4-6v6M6 7l1 14h10l1-14M9 7V4h6v3" />
+      </symbol>
+    </svg>
+
+    <header class="topbar">
+      <a class="brand" href="/pages/admin.html">
+        <img src="/assets/logo%20navbar.png" alt="">
+        <span class="brand-name">StuntBot</span>
+        <span class="brand-role">ADMIN</span>
+      </a>
+      <div class="header-actions">
+        <a href="../index.html">
+          <svg aria-hidden="true"><use href="#i-home" /></svg>
+          <span>Halaman pengguna</span>
+        </a>
+        <button id="logout" type="button" hidden>
+          <svg aria-hidden="true"><use href="#i-logout" /></svg>
+          <span>Keluar</span>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section class="login-card" id="loginCard">
+        <div class="login-mark">
+          <svg aria-hidden="true"><use href="#a-shield" /></svg>
+        </div>
+        <div class="eyebrow">AREA PETUGAS</div>
+        <h1>Masuk admin</h1>
+        <p class="intro">Masuk untuk mengelola data dan jadwal pemeriksaan.</p>
+        <form id="loginForm">
+          <label for="username">Username</label>
+          <div class="field-control">
+            <svg aria-hidden="true"><use href="#a-records" /></svg>
+            <input id="username" name="username" type="text" autocomplete="username" placeholder="Username admin" required>
+          </div>
+          <label for="password">Kata sandi</label>
+          <div class="field-control">
+            <svg aria-hidden="true"><use href="#a-shield" /></svg>
+            <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Kata sandi admin" required>
+          </div>
+          <button class="primary login-submit" id="loginButton" type="submit">
+            Masuk ke dashboard
+            <svg aria-hidden="true"><use href="#a-arrow" /></svg>
+          </button>
+          <p class="notice" id="loginNotice" role="status" aria-live="polite"></p>
+        </form>
+        <p class="login-help">Akses khusus petugas puskesmas.</p>
+      </section>
+
+      <section id="dashboard" hidden>
+        <div class="dashboard-heading">
+          <div>
+            <div class="eyebrow">RUANG KERJA PETUGAS</div>
+            <h1>Dashboard admin</h1>
+            <p>Kelola data pemeriksaan dan jadwal puskesmas.</p>
+          </div>
+          <span class="signed-in">
+            <svg aria-hidden="true"><use href="#a-shield" /></svg>
+            Sesi admin aktif
+          </span>
+        </div>
+
+        <div class="dashboard-grid">
+          <section class="card">
+            <div class="card-heading">
+              <span class="card-icon"><svg aria-hidden="true"><use href="#a-records" /></svg></span>
+              <span class="eyebrow">DATA</span>
+            </div>
+            <h2>Data pemeriksaan</h2>
+            <p>Lihat catatan yang masuk atau tambahkan hasil pemeriksaan baru.</p>
+            <div class="actions">
+              <a class="button secondary" href="view.html">
+                Lihat data <svg aria-hidden="true"><use href="#a-arrow" /></svg>
+              </a>
+              <a class="button primary-link" href="form.html">
+                Input data <svg aria-hidden="true"><use href="#a-arrow" /></svg>
+              </a>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-heading">
+              <span class="card-icon"><svg aria-hidden="true"><use href="#a-calendar" /></svg></span>
+              <span class="eyebrow">JADWAL</span>
+            </div>
+            <h2>Jadwal pemeriksaan</h2>
+            <p>Atur jadwal yang akan ditampilkan pada dashboard pengguna.</p>
+            <form id="scheduleForm">
+              <div class="form-grid">
+                <div>
+                  <label for="tanggal">Tanggal</label>
+                  <input id="tanggal" type="date" name="tanggal" required>
+                </div>
+                <div>
+                  <label for="waktu">Waktu</label>
+                  <input id="waktu" type="time" name="waktu" required>
+                </div>
+                <div class="wide">
+                  <label for="puskesmas">Puskesmas</label>
+                  <input id="puskesmas" name="puskesmas" placeholder="Nama puskesmas" required>
+                </div>
+                <div class="wide">
+                  <label for="lokasi">Alamat atau lokasi</label>
+                  <input id="lokasi" name="lokasi" placeholder="Alamat pemeriksaan">
+                </div>
+                <div class="wide">
+                  <label for="catatan">Catatan</label>
+                  <input id="catatan" name="catatan" placeholder="Informasi tambahan (opsional)">
+                </div>
+              </div>
+              <button class="primary save-button" id="saveSchedule" type="submit">
+                <svg aria-hidden="true"><use href="#a-calendar" /></svg>
+                Simpan jadwal
+              </button>
+              <p class="notice" id="scheduleNotice" role="status" aria-live="polite"></p>
+            </form>
+          </section>
+        </div>
+
+        <section class="card schedule-card">
+          <div class="schedule-heading">
+            <div class="card-heading">
+              <span class="card-icon"><svg aria-hidden="true"><use href="#a-calendar" /></svg></span>
+              <div>
+                <h2>Jadwal terdaftar</h2>
+                <p>Jadwal ini juga ditampilkan di dashboard pengguna.</p>
+              </div>
+            </div>
+          </div>
+          <div id="schedules" aria-live="polite">Memuat jadwal…</div>
+        </section>
+      </section>
+    </main>
+    <script src="admin.js"></script>
+  </body>
+</html>

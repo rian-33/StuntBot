@@ -352,6 +352,144 @@ h2 {
 .quick-card:hover .card-link svg {
   transform:translateX(3px);
 }
+.schedule-card {
+  cursor:default;
+}
+.schedule-card:hover {
+  transform:none;
+  border-color:var(--line);
+  box-shadow:var(--shadow);
+}
+.schedule-content {
+  min-width:0;
+  flex:1;
+}
+.schedule-list {
+  display:grid;
+  gap:10px;
+  color:var(--muted);
+  font-size:14px;
+}
+.schedule-item {
+  display:grid;
+  gap:3px;
+  padding:10px 12px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fbfdfb;
+}
+.schedule-item strong {
+  color:var(--ink);
+}
+.schedule-item small {
+  color:var(--muted);
+  line-height:1.5;
+}
+.schedule-item .schedule-detail {
+  display:block;
+  padding-top:4px;
+}
+.schedule-item .schedule-detail + .schedule-detail {
+  border-top:1px solid var(--line);
+}
+#jadwal.schedule-card {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+}
+#jadwal .schedule-content {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  width:100%;
+}
+#jadwal .schedule-content > h3,
+#jadwal .schedule-content > p {
+  text-align:center;
+}
+#jadwal .schedule-list {
+  width:min(100%, 460px);
+  margin:0 auto;
+}
+#jadwal .schedule-item {
+  justify-items:center;
+  text-align:center;
+}
+.telegram-panel {
+  display:flex;
+  align-items:flex-start;
+  gap:18px;
+  padding:26px;
+  border:1px solid var(--line);
+  border-radius:20px;
+  background:#fff;
+  box-shadow:var(--shadow);
+}
+.telegram-panel > .quick-icon {
+  flex:none;
+}
+.telegram-panel-content {
+  min-width:0;
+  flex:1;
+}
+.telegram-panel-content h3 {
+  margin:2px 0 7px;
+  font-size:17px;
+}
+.telegram-panel-content > p {
+  margin:0 0 16px;
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.6;
+}
+.telegram-panel label {
+  display:block;
+  margin-bottom:7px;
+  font-size:13px;
+  font-weight:700;
+}
+.telegram-controls {
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.telegram-controls input {
+  width:min(100%, 330px);
+  min-height:44px;
+  padding:0 12px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#fff;
+  color:var(--ink);
+  font:inherit;
+}
+.verified-phone {
+  display:grid;
+  gap:2px;
+  flex:1;
+  min-width:0;
+  color:var(--ink);
+}
+.verified-phone span {
+  color:var(--muted);
+  font-size:12px;
+}
+.verified-phone strong {
+  font-size:15px;
+  overflow-wrap:anywhere;
+}
+.telegram-controls .button {
+  min-height:44px;
+  white-space:nowrap;
+}
+.telegram-status {
+  min-height:20px;
+  margin:9px 0 0;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.5;
+}
 .info-grid {
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -652,6 +790,20 @@ footer {
   .footer-wrap {
     align-items:flex-start;
     flex-direction:column;
+  }
+  .telegram-panel {
+    flex-direction:column;
+    padding:21px;
+  }
+  .telegram-controls {
+    align-items:stretch;
+    flex-direction:column;
+  }
+  .verified-phone {
+    width:100%;
+  }
+  .telegram-controls .button {
+    width:100%;
   }
 }
 @media(prefers-reduced-motion:reduce) {

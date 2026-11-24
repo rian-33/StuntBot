@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
@@ -16,6 +16,7 @@
   <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V4m0 16h17M8 15l4-4 3 2 5-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 7h3v3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 11v5m0-8h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
   <symbol id="i-form" viewBox="0 0 24 24"><path d="M7 3h8l5 5v13H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M15 3v5h5M9 13h7m-7 4h7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="m21 3-7.4 18-3.5-7.1L3 10.4 21 3Zm0 0L10.1 13.9" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 0 4 22V5.5Zm0 0V20m4-13h8m-8 4h8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 8.8c0 5-8.8 10-8.8 10s-8.8-5-8.8-10A4.7 4.7 0 0 1 12 6.4a4.7 4.7 0 0 1 8.8 2.4Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M5 12h4l2-3 2.2 6 2-3H19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
@@ -32,9 +33,10 @@
       <a href="#home" class="active"><svg aria-hidden="true"><use href="#i-home"/></svg><span>Home</span></a>
       <a href="#stunting"><svg aria-hidden="true"><use href="#i-book"/></svg><span>Tentang Stunting</span></a>
       <a href="#about"><svg aria-hidden="true"><use href="#i-info"/></svg><span>Tentang StuntBot</span></a>
+      <a href="#telegramTitle"><svg aria-hidden="true"><use href="#i-send"/></svg><span>Bot Telegram</span></a>
     </nav>
     <div class="nav-actions">
-      <a class="nav-cta" href="form.html"><svg aria-hidden="true"><use href="#i-form"/></svg>Input Data</a>
+      <a class="nav-cta" href="view.html"><svg aria-hidden="true"><use href="#i-chart"/></svg>Lihat Data</a>
       <button class="logout" id="logoutButton" type="button"><svg aria-hidden="true"><use href="#i-logout"/></svg>Keluar</button>
       <button class="menu-toggle" id="menuToggle" type="button" aria-label="Buka navigasi" aria-expanded="false" aria-controls="mainNav"><svg aria-hidden="true"><use href="#i-menu"/></svg></button>
     </div>
@@ -45,10 +47,10 @@
     <div class="hero-copy">
       <span class="eyebrow"><svg aria-hidden="true"><use href="#i-heart"/></svg> PEMANTAUAN TUMBUH KEMBANG</span>
       <h1>Selamat datang di dashboard StuntBot</h1>
-      <p>Home adalah pusat navigasi untuk mulai bekerja. Dari sini, Anda dapat membuka formulir pencatatan antropometri, melihat data terbaru, dan membaca informasi ringkas tentang stunting serta tujuan StuntBot.</p>
+      <p>Lihat informasi pertumbuhan, data yang telah dicatat petugas, dan jadwal pemeriksaan stunting di puskesmas.</p>
       <div class="hero-actions">
-        <a class="button button-primary" href="form.html"><svg aria-hidden="true"><use href="#i-form"/></svg> Mulai input data</a>
-        <a class="button button-secondary" href="view.html"><svg aria-hidden="true"><use href="#i-chart"/></svg> Lihat data terbaru</a>
+        <a class="button button-primary" href="view.html"><svg aria-hidden="true"><use href="#i-chart"/></svg> Lihat data terbaru</a>
+        <a class="button button-secondary" href="#jadwal">Jadwal pemeriksaan</a>
       </div>
     </div>
     <div class="hero-visual">
@@ -56,10 +58,25 @@
     </div>
   </section>
   <section class="section" aria-labelledby="quickTitle">
-    <div class="section-heading"><span class="eyebrow">MULAI DARI HOME</span><h2 id="quickTitle">Apa yang ingin Anda lakukan?</h2><p>Pilih menu berikut untuk melanjutkan. Setiap halaman dirancang agar alur pencatatan dan peninjauan data mudah ditemukan.</p></div>
+    <div class="section-heading"><span class="eyebrow">INFORMASI UNTUK ANDA</span><h2 id="quickTitle">Pantau informasi pemeriksaan</h2><p>Pengguna dapat melihat data dan jadwal pemeriksaan yang dimasukkan oleh petugas admin.</p></div>
     <div class="quick-grid">
-      <a class="quick-card" href="form.html"><span class="quick-icon"><svg aria-hidden="true"><use href="#i-form"/></svg></span><div><h3>Input data balita</h3><p>Catat identitas dan pengukuran antropometri melalui formulir StuntBot.</p><span class="card-link">Buka formulir <svg aria-hidden="true"><use href="#i-arrow"/></svg></span></div></a>
       <a class="quick-card" href="view.html"><span class="quick-icon"><svg aria-hidden="true"><use href="#i-chart"/></svg></span><div><h3>Data terbaru</h3><p>Tinjau daftar data terbaru yang diambil dari layanan Google Apps Script.</p><span class="card-link">Lihat data <svg aria-hidden="true"><use href="#i-arrow"/></svg></span></div></a>
+      <article class="quick-card schedule-card" id="jadwal"><span class="quick-icon"><svg aria-hidden="true"><use href="#i-book"/></svg></span><div class="schedule-content"><h3>Jadwal pemeriksaan</h3><p>Jadwal pemeriksaan stunting di puskesmas.</p><div id="scheduleList" aria-live="polite" class="schedule-list">Memuat jadwal…</div></div></article>
+    </div>
+  </section>
+  <section class="section" aria-labelledby="telegramTitle">
+    <div class="section-heading"><span class="eyebrow">NOTIFIKASI TELEGRAM</span><h2 id="telegramTitle">Chat dengan StuntBot</h2><p>Gunakan nomor HP yang sudah diverifikasi admin untuk membuka chat Telegram.</p></div>
+    <div class="telegram-panel">
+      <span class="quick-icon"><svg aria-hidden="true"><use href="#i-send"/></svg></span>
+      <div class="telegram-panel-content">
+        <h3>Notifikasi pemeriksaan</h3>
+        <p>Gunakan nomor HP yang terdaftar. Setelah admin memverifikasi nomor, tombol di bawah akan membuka Telegram untuk menyelesaikan penghubungan.</p>
+        <div class="telegram-controls">
+          <div class="verified-phone"><span>Nomor terverifikasi</span><strong id="telegramPhone">Memeriksa akun…</strong></div>
+          <button class="button button-primary" id="telegramButton" type="button">Chat StuntBot</button>
+        </div>
+        <p class="telegram-status" id="telegramStatus" role="status" aria-live="polite"></p>
+      </div>
     </div>
   </section>
   <section class="section" id="stunting" aria-labelledby="stuntingTitle">
@@ -79,9 +96,112 @@
     </div>
   </section>
 </main>
+<script>
+async function loadScheduleCards() {
+  const root = document.getElementById("scheduleList");
+  try {
+    const response = await fetch("/api/schedules");
+    if (!response.ok) throw new Error("Jadwal belum tersedia.");
+    const result = await response.json();
+    root.replaceChildren();
+
+    if (!result.success || !result.data.length) {
+      root.textContent = "Belum ada jadwal pemeriksaan.";
+      return;
+    }
+
+    result.data.forEach(item => {
+      const row = document.createElement("div");
+      row.className = "schedule-item";
+
+      const heading = document.createElement("strong");
+      heading.textContent = `${item.tanggal} · ${item.waktu}`;
+
+      const place = document.createElement("span");
+      place.textContent = item.puskesmas;
+      row.append(heading, place);
+
+      if (item.lokasi) {
+        const location = document.createElement("small");
+        location.className = "schedule-detail";
+        location.textContent = `Alamat: ${item.lokasi}`;
+        row.append(location);
+      }
+
+      if (item.catatan) {
+        const note = document.createElement("small");
+        note.className = "schedule-detail";
+        note.textContent = `Catatan: ${item.catatan}`;
+        row.append(note);
+      }
+
+      root.append(row);
+    });
+  } catch (error) {
+    root.textContent = "Jadwal belum dapat dimuat. Coba muat ulang halaman.";
+  }
+}
+
+loadScheduleCards();
+
+const telegramButton = document.getElementById("telegramButton");
+const telegramStatus = document.getElementById("telegramStatus");
+async function loadUserTelegramLink(openTelegramWhenReady = false) {
+  telegramButton.disabled = true;
+  delete telegramButton.dataset.chatUrl;
+  telegramStatus.textContent = "Memeriksa status koneksi Telegram…";
+  try {
+    const sessionResponse = await fetch("/api/user/session");
+    if (!sessionResponse.ok) {
+      window.location.replace("../index.html");
+      return;
+    }
+    const user = await sessionResponse.json();
+    document.getElementById("telegramPhone").textContent = user.phone;
+
+    const response = await fetch("/api/telegram/status", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({}),
+    });
+    const result = await response.json();
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || "Status Telegram tidak dapat diperiksa.");
+    }
+
+    if (result.approved && result.ready && result.url) {
+      telegramButton.textContent = result.connected ? "Chat StuntBot" : "Hubungkan dengan StuntBot";
+      telegramButton.dataset.chatUrl = result.url;
+      telegramStatus.textContent = result.connected
+        ? "Nomor sudah terhubung dengan bot."
+        : "Tautan pairing siap. Buka Telegram dan bagikan nomor HP yang sama.";
+      if (openTelegramWhenReady) window.location.href = result.url;
+      return;
+    }
+
+    telegramButton.textContent = "Hubungkan dengan StuntBot";
+    telegramStatus.textContent = result.approved
+      ? "Nomor disetujui, tetapi tautan pairing belum tersedia. Periksa token bot dan deployment Apps Script."
+      : "Admin perlu memverifikasi nomor ini terlebih dahulu.";
+  } catch (error) {
+    telegramButton.textContent = "Hubungkan dengan StuntBot";
+    telegramStatus.textContent = error.message || "Status Telegram belum dapat diperiksa.";
+  } finally {
+    telegramButton.disabled = false;
+  }
+}
+
+telegramButton.addEventListener("click", () => {
+  if (telegramButton.dataset.chatUrl) {
+    window.location.href = telegramButton.dataset.chatUrl;
+    return;
+  }
+  loadUserTelegramLink(true);
+});
+loadUserTelegramLink();
+</script>
 <footer><div class="container footer-wrap"><div class="footer-brand"><img src="/assets/logo%20navbar.png" alt="">StuntBot</div><span>Catat dengan baik, pantau dengan cermat.</span><a class="card-link" href="#home">Kembali ke atas ↑</a></div></footer>
 <script>
-  if (localStorage.getItem("stuntbot_logged") !== "true") window.location.replace("../index.html");
   const nav = document.getElementById("mainNav");
   const menuToggle = document.getElementById("menuToggle");
   const navLinks = [...nav.querySelectorAll("a")];
@@ -103,11 +223,13 @@
       navLinks.forEach(link => link.classList.toggle("active", link.hash === "#" + entry.target.id));
     });
   }, { rootMargin: "-30% 0px -58% 0px" });
-  ["home", "stunting", "about"].forEach(id => sectionObserver.observe(document.getElementById(id)));
-  document.getElementById("logoutButton").addEventListener("click", () => {
-    localStorage.removeItem("stuntbot_logged");
+  ["home", "stunting", "about", "telegramTitle"].forEach(id => sectionObserver.observe(document.getElementById(id)));
+  document.getElementById("logoutButton").addEventListener("click", async () => {
+    await fetch("/api/user/logout", { method: "POST" });
     window.location.replace("../index.html");
   });
 </script>
 </body>
 </html>
+
+

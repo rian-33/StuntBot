@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
@@ -172,6 +172,8 @@
                   required
                 />
               </div>
+              <button id="connectTelegramButton" class="connect-telegram" type="button">Hubungkan dengan bot</button>
+              <p class="telegram-note">Tekan Start di Telegram, lalu bagikan nomor HP yang sama. Tautan berlaku 10 menit.</p>
             </div>
             <div class="field">
               <label for="tanggal_lahir">Tanggal lahir</label>
@@ -254,8 +256,7 @@
       </section>
     </main>
     <script>
-      if (localStorage.getItem("stuntbot_logged") !== "true")
-        window.location.replace("../index.html");
+      fetch("/api/admin/session").then(response => { if (!response.ok) window.location.replace("admin.html"); });
       const form = document.getElementById("dataForm"),
         button = document.getElementById("submitButton"),
         message = document.getElementById("message"),
@@ -276,6 +277,39 @@
         localStorage.removeItem("stuntbot_logged");
         window.location.replace("../index.html");
       });
+      document
+        .getElementById("connectTelegramButton")
+        .addEventListener("click", async (event) => {
+          const phone = document.getElementById("hp").value.trim();
+          if (!/^\d{8,15}$/.test(phone)) {
+            message.className = "message error show";
+            message.textContent = "Masukkan nomor HP 8–15 digit terlebih dahulu.";
+            return;
+          }
+
+          const connectButton = event.currentTarget;
+          connectButton.disabled = true;
+          connectButton.textContent = "Menyiapkan tautan…";
+          try {
+            const response = await fetch("/api/telegram/link", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ phone }),
+            });
+            const result = await response.json();
+            if (!response.ok || !result.success) {
+              throw new Error(result.message || "Tautan bot gagal dibuat.");
+            }
+            message.className = "message success show";
+            message.textContent = "Tautan siap selama 10 menit. User dapat memasukkan nomor ini di halaman utama, lalu memilih Chat StuntBot.";
+          } catch (error) {
+            message.className = "message error show";
+            message.textContent = error.message || "Tidak dapat membuka tautan bot.";
+          } finally {
+            connectButton.disabled = false;
+            connectButton.textContent = "Hubungkan dengan bot";
+          }
+        });
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
         message.className = "message";

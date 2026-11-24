@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   --ink:#183a3b;
   --muted:#718582;
   --teal:#0c746e;
@@ -348,6 +348,9 @@ tbody tr:hover {
   place-items:center;
   padding:30px;
   text-align:center;
+}
+.state[hidden] {
+  display:none;
 }
 .state-inner {
   max-width:360px;

@@ -1,117 +1,139 @@
-/**
- * Web‑App entry point – menerima JSON dari website
- *
- * Expected JSON fields (sesuai PRD):
- *   nik, nama, jenis_kelamin, tanggal_lahir,
- *   tanggal_ukur, tinggi_cm, posisi_ukur, hp, isStunted
- *
- * Spreadsheet layout (asumsi):
- *   A: NIK
- *   B: Nama Lengkap
- *   C: Jenis Kelamin
- *   D: Tanggal Lahir
- *   E: Tanggal Ukur
- *   F: Tinggi (cm)
- *   G: Posisi Pengukuran
- *   H: Nomor HP
- *   I: Stunted? (TRUE / FALSE)
- */
+﻿/** Web app endpoints: website submissions, Telegram updates, and recent records. */
 function doPost(e) {
-  // ---- 1️⃣ CONFIGURATION ----
-  const SPREADSHEET_ID = '17jQbCJkfOG68SGicnFonP_9EZclxfHQryldIBIf8KNI'; // <-- ganti bila berbeda
-  const SHEET_NAME    = 'HasilPendataan';                               // <-- nama sheet
-
   try {
-    // ---- 2️⃣ READ & VALIDATE INPUT ----
-    if (!e.postData || !e.postData.contents) {
-      throw new Error('No POST body');
-    }
-    const data = JSON.parse(e.postData.contents);
-    Logger.log('Received payload: %s', JSON.stringify(data));
+    var raw = e && e.postData && e.postData.contents;
+    if (!raw) return jsonOutput_({ status: "error", message: "Request body kosong." });
+    var body = JSON.parse(raw);
 
-    // (Optional) simple validation
-    if (!data.nik || data.nik.length !== 16) {
-      throw new Error('NIK must be 16 digits');
-    }
-    if (!data.tinggi_cm) {
-      throw new Error('tinggi_cm is required');
-    }
-    if (!data.hp) {
-      throw new Error('Nomor HP (hp) is required');
-    }
-
-    // ---- 3️⃣ PREPARE ROW DATA (exact column order) ----
-    const hpValue = (data.hp || '').toString().trim(); // ensure plain‑text string
-    const row = [
-      data.nik               || '',
-      data.nama              || '',
-      data.jenis_kelamin     || '',
-      data.tanggal_lahir ? new Date(data.tanggal_lahir) : '',
-      data.tanggal_ukur  ? new Date(data.tanggal_ukur)  : '',
-      parseFloat(data.tinggi_cm) || '',
-      data.posisi_ukur       || '',
-      hpValue,                               // Nomor HP column (H)
-      data.isStunted ? 'TRUE' : 'FALSE'      // Stunted column (I)
-    ];
-    Logger.log('Row to write: %s', JSON.stringify(row));
-
-    // ---- 4️⃣ WRITE TO SHEET ----
-    const ss    = SpreadsheetApp.openById(SPREADSHEET_ID);
-    const sheet = ss.getSheetByName(SHEET_NAME);
-    if (!sheet) {
-      throw new Error(`Sheet "${SHEET_NAME}" not found`);
-    }
-    const nextRow = sheet.getLastRow() + 1;
-    sheet.getRange(nextRow, 1, 1, row.length).setValues([row]);
-
-    // ---- 5️⃣ RETURN SUCCESS (JSON) ----
-    return ContentService
-      .createTextOutput(JSON.stringify({ status: 'ok', hp: hpValue }))
-      .setMimeType(ContentService.MimeType.JSON);
-  } catch (err) {
-    Logger.log('Error: %s', err.message);
-    return ContentService
-      .createTextOutput(JSON.stringify({ status: 'error', message: err.message }))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-}
-
-/**
- * GET endpoint – used by view.html untuk menampilkan 10 data terbaru.
- * Jika dipanggil tanpa query, hanya mengembalikan teks sederhana.
- */
-function doGet(e) {
-  if (e && e.parameter && e.parameter.view === '1') {
-    const SPREADSHEET_ID = '17jQbCJkfOG68SGicnFonP_9EZclxfHQryldIBIf8KNI';
-    const SHEET_NAME = 'HasilPendataan';
-    const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
-    if (!sheet) {
-      return ContentService
-        .createTextOutput(JSON.stringify({ status: 'error', message: 'Sheet not found' }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-
-    const lastRow = sheet.getLastRow();
-    const firstRow = Math.max(2, lastRow - 9);
-    const data = lastRow < 2 ? [] : sheet.getRange(firstRow, 1, lastRow - firstRow + 1, 9).getDisplayValues()
-      .reverse()
-      .map(function (row) {
-        return {
-          nama: row[1],
-          jenisKelamin: row[2],
-          tanggalLahir: row[3],
-          tanggalUkur: row[4],
-          tinggiCm: row[5],
-          posisiUkur: row[6],
-          isStunted: String(row[8]).toUpperCase() === 'TRUE'
-        };
+    // The website requests an expiring, one-time pairing link for the entered phone.
+    if (body && body.action === "create_telegram_pair") {
+      var phone = Sheets.normalizePhone_(body.phone);
+      if (!/^\d{8,15}$/.test(phone)) {
+        return jsonOutput_({ status: "error", message: "Nomor HP tidak valid." });
+      }
+      var pairToken = Session.createPairToken(phone);
+      var username = Telegram.getBotUsername();
+      return jsonOutput_({
+        status: "ok",
+        url: "https://t.me/" + username + "?start=pair_" + pairToken
       });
-    return ContentService
-      .createTextOutput(JSON.stringify({ status: 'ok', data: data }))
-      .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    if (body && body.action === "telegram_status") {
+      var statusPhone = Sheets.normalizePhone_(body.phone);
+      if (!/^\d{8,15}$/.test(statusPhone)) {
+        return jsonOutput_({ status: "error", message: "Nomor HP tidak valid." });
+      }
+      var connected = Boolean(Session.getChatIdForPhone(statusPhone));
+      var activePair = Session.getPairTokenForPhone(statusPhone);
+      var approved = connected || Session.isPhoneApproved(statusPhone) || Boolean(activePair);
+      if (approved && !connected && !activePair) {
+        activePair = Session.createPairToken(statusPhone);
+      }
+      var ready = approved && (connected || Boolean(activePair));
+      var pairUrl = null;
+      if (ready) {
+        var botUsername = Telegram.getBotUsername();
+        pairUrl = connected
+          ? "https://t.me/" + botUsername
+          : "https://t.me/" + botUsername + "?start=pair_" + activePair;
+      }
+      return jsonOutput_({
+        status: "ok",
+        approved: approved,
+        connected: connected,
+        ready: ready,
+        url: pairUrl
+      });
+    }
+
+    // Telegram sends message/callback updates to the same deployed web app URL.
+    if (body && (body.message || body.callback_query)) {
+      if (!e.parameter || e.parameter.key !== getWebhookSecret_()) {
+        return jsonOutput_({ status: "error", message: "Webhook tidak terverifikasi." });
+      }
+      handleTelegramUpdate(body);
+      return jsonOutput_({ status: "ok" });
+    }
+
+    if (body && body.action) {
+      return jsonOutput_({ status: "error", message: "Aksi tidak dikenal. Deploy versi terbaru Code.gs." });
+    }
+
+    validateWebsiteRecord_(body);
+    var rowNumber = Sheets.addRecord(body);
+    var phone = Sheets.normalizePhone_(body.hp);
+    var chatId = Session.getChatIdForPhone(phone);
+    var notified = false;
+    if (chatId) {
+      try {
+        Telegram.sendMessage(chatId,
+          "Data pendataan untuk <b>" + escapeHtml_(body.nama) + "</b> sudah tersimpan.",
+          { inline_keyboard: [[{ text: "Lihat hasil pendataan", callback_data: "result:" + rowNumber }]] }
+        );
+        notified = true;
+      } catch (telegramError) {
+        // A Telegram outage must not roll back a successfully stored record.
+        console.error("Telegram notification failed: " + telegramError.message);
+      }
+    }
+    return jsonOutput_({ status: "ok", hp: phone, telegramNotified: notified });
+  } catch (error) {
+    console.error("doPost error: " + error.message);
+    return jsonOutput_({ status: "error", message: error.message });
   }
-  // Jika tidak ada parameter, beri respons teks (bisa di‑redirect ke login page di server)
-  return ContentService
-    .createTextOutput('StuntBot Web Service – GET endpoint')
-    .setMimeType(ContentService.MimeType.TEXT);
 }
+
+function doGet(e) {
+  if (e && e.parameter && e.parameter.telegram === "1") {
+    try {
+      return jsonOutput_({ status: "ok", username: Telegram.getBotUsername() });
+    } catch (error) {
+      console.error("Telegram username error: " + error.message);
+      return jsonOutput_({ status: "error", message: "Gagal mengambil username bot." });
+    }
+  }
+  if (e && e.parameter && e.parameter.view === "1") {
+    try {
+      return jsonOutput_({ status: "ok", data: Sheets.getRecentRecords(10) });
+    } catch (error) {
+      console.error("doGet error: " + error.message);
+      return jsonOutput_({ status: "error", message: "Gagal membaca spreadsheet." });
+    }
+  }
+  return ContentService.createTextOutput("StuntBot Web Service");
+}
+
+function validateWebsiteRecord_(data) {
+  if (!data || !/^\d{16}$/.test(String(data.nik || ""))) throw new Error("NIK harus 16 digit.");
+  if (!String(data.nama || "").trim()) throw new Error("Nama wajib diisi.");
+  if (!["L", "P"].includes(String(data.jenis_kelamin || "").trim().toUpperCase())) throw new Error("Jenis kelamin harus L atau P.");
+
+  var birth = String(data.tanggal_lahir || "");
+  var measured = String(data.tanggal_ukur || "");
+  var datePattern = /^\d{4}-\d{2}-\d{2}$/;
+  if (!datePattern.test(birth) || !datePattern.test(measured) ||
+      isNaN(Date.parse(birth + "T00:00:00Z")) || isNaN(Date.parse(measured + "T00:00:00Z")) ||
+      new Date(birth + "T00:00:00Z").toISOString().slice(0, 10) !== birth ||
+      new Date(measured + "T00:00:00Z").toISOString().slice(0, 10) !== measured) {
+    throw new Error("Tanggal lahir dan tanggal ukur tidak valid.");
+  }
+  if (measured < birth) throw new Error("Tanggal ukur tidak boleh sebelum tanggal lahir.");
+  if (!isFinite(Number(data.tinggi_cm)) || Number(data.tinggi_cm) <= 0) throw new Error("Tinggi harus berupa angka lebih dari 0.");
+  if (!["Berdiri", "Terlentang"].includes(String(data.posisi_ukur || "").trim())) throw new Error("Posisi pengukuran tidak valid.");
+  if (!/^\d{8,15}$/.test(Sheets.normalizePhone_(data.hp))) throw new Error("Nomor HP tidak valid.");
+}
+
+function jsonOutput_(value) {
+  return ContentService.createTextOutput(JSON.stringify(value))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function escapeHtml_(value) {
+  return String(value == null ? "" : value).replace(/[&<>"']/g, function (ch) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch];
+  });
+}
+
+
+

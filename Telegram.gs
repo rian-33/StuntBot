@@ -1,60 +1,39 @@
-/**
- * telegram.gs – Helper functions to talk to Telegram Bot API
- */
+﻿/** Telegram Bot API client. */
 var Telegram = (function () {
-  var baseUrl = "https://api.telegram.org/bot" + CONFIG.BOT_TOKEN;
-
-  /**
-   * Kirim pesan teks ke chat tertentu.
-   *
-   * @param {Number|String} chatId  ID chat (user atau grup)
-   * @param {String}        text    Isi pesan
-   * @param {String}        parseMode  (optional) 'HTML' | 'Markdown' | 'MarkdownV2'
-   */
-  function sendMessage(chatId, text, parseMode) {
-    var payload = {
-      method: "post",
-      contentType: "application/json",
-      muteHttpExceptions: true,
-      payload: JSON.stringify({
-        chat_id: chatId,
-        text: text,
-        parse_mode: parseMode || CONFIG.DEFAULT_PARSE_MODE,
-      }),
-    };
-    var url = baseUrl + "/sendMessage";
-    UrlFetchApp.fetch(url, payload);
+  function callApi_(method, payload) {
+    var token = getTelegramBotToken_();
+    var response = UrlFetchApp.fetch("https://api.telegram.org/bot" + token + "/" + method, {
+      method: "post", contentType: "application/json", muteHttpExceptions: true,
+      payload: JSON.stringify(payload || {})
+    });
+    var result = JSON.parse(response.getContentText());
+    if (!result.ok) throw new Error("Telegram API: " + (result.description || "request gagal"));
+    return result.result;
   }
-
-  /**
-   * Set webhook URL untuk bot ini (hanya dipanggil sekali saat konfigurasi).
-   *
-   * @param {String} webhookUrl  URL publik yang mengarah ke Web‑App Anda.
-   */
-  function setWebhook(webhookUrl) {
-    var url = baseUrl + "/setWebhook";
-    var opts = {
-      method: "post",
-      contentType: "application/json",
-      muteHttpExceptions: true,
-      payload: JSON.stringify({ url: webhookUrl }),
-    };
-    var resp = UrlFetchApp.fetch(url, opts);
-    Logger.log("setWebhook response: %s", resp.getContentText());
+  function sendMessage(chatId, text, replyMarkup) {
+    var payload = { chat_id: chatId, text: text, parse_mode: "HTML" };
+    if (replyMarkup) payload.reply_markup = replyMarkup;
+    return callApi_("sendMessage", payload);
   }
-
-  /**
-   * Dapatkan info webhook yang sedang aktif (debug).
-   */
-  function getWebhookInfo() {
-    var resp = UrlFetchApp.fetch(baseUrl + "/getWebhookInfo");
-    Logger.log("WebhookInfo: %s", resp.getContentText());
+  function answerCallbackQuery(callbackId, text) {
+    return callApi_("answerCallbackQuery", { callback_query_id: callbackId, text: text || "" });
   }
-
-  // expose public API
-  return {
-    sendMessage: sendMessage,
-    setWebhook: setWebhook,
-    getWebhookInfo: getWebhookInfo,
-  };
+  function getBotUsername() {
+    var me = callApi_("getMe", {});
+    return me.username;
+  }
+  function setWebhook(url) {
+    return callApi_("setWebhook", { url: url, allowed_updates: ["message", "callback_query"] });
+  }
+  return { callApi_: callApi_, sendMessage: sendMessage, answerCallbackQuery: answerCallbackQuery, getBotUsername: getBotUsername, setWebhook: setWebhook };
 })();
+
+/** Run once manually after deploying the Apps Script web app. */
+function setupTelegramWebhook() {
+  var webAppUrl = ScriptApp.getService().getUrl();
+  if (!webAppUrl) throw new Error("Deploy Apps Script sebagai Web App terlebih dahulu.");
+  var url = webAppUrl + (webAppUrl.indexOf("?") >= 0 ? "&" : "?") + "key=" + getWebhookSecret_();
+  Telegram.setWebhook(url);
+  Logger.log("Webhook Telegram berhasil dipasang.");
+}
+

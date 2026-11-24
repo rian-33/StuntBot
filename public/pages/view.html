@@ -18,7 +18,7 @@
 <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3 2.8 20h18.4L12 3Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M12 9v5m0 3h.01" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
 </svg>
 <header class="topbar"><div class="nav"><a class="brand" href="home.html"><img src="/assets/logo%20navbar.png" alt=""><span>StuntBot</span></a>
-<nav class="navlinks" aria-label="Navigasi utama"><a href="home.html"><svg aria-hidden="true"><use href="#i-house"/></svg><span>Dashboard</span></a><a href="form.html"><svg aria-hidden="true"><use href="#i-send"/></svg><span>Input data</span></a><a href="view.html" class="active" aria-current="page"><svg aria-hidden="true"><use href="#i-chart"/></svg><span>Lihat data</span></a></nav>
+<nav class="navlinks" aria-label="Navigasi utama"><a href="home.html"><svg aria-hidden="true"><use href="#i-house"/></svg><span>Dashboard</span></a><a href="home.html#jadwal"><svg aria-hidden="true"><use href="#i-clock"/></svg><span>Jadwal pemeriksaan</span></a><a href="view.html" class="active" aria-current="page"><svg aria-hidden="true"><use href="#i-chart"/></svg><span>Lihat data</span></a></nav>
 <button class="logout" id="logoutButton" type="button"><svg aria-hidden="true"><use href="#i-logout"/></svg>Keluar</button></div></header>
 <main class="page">
 <div class="intro"><div><span class="eyebrow">PEMANTAUAN DATA</span><h1>Data balita terbaru</h1><p>Tinjau catatan yang tersimpan. Data ditampilkan dari Google Sheets melalui layanan StuntBot.</p></div><button class="refresh" id="refreshButton" type="button"><svg aria-hidden="true"><use href="#i-refresh"/></svg>Muat ulang</button></div>
@@ -31,17 +31,17 @@
 <div class="toolbar"><label class="search"><svg aria-hidden="true"><use href="#i-search"/></svg><input id="searchInput" type="search" placeholder="Cari nama atau posisi ukur…" autocomplete="off"></label>
 <div class="filters" role="group" aria-label="Filter status"><button class="filter" type="button" data-filter="all" aria-pressed="true">Semua</button><button class="filter" type="button" data-filter="yes" aria-pressed="false">Ditandai</button><button class="filter" type="button" data-filter="no" aria-pressed="false">Tidak ditandai</button></div></div>
 <div id="loadingState" class="state"><div class="state-inner"><div class="skeleton"></div><div class="skeleton skeleton-short"></div><p class="loading-copy">Mengambil data tersimpan…</p></div></div>
-<div id="emptyState" class="state" hidden><div class="state-inner"><span class="state-icon"><svg aria-hidden="true"><use href="#i-empty"/></svg></span><h2 id="emptyTitle">Belum ada data</h2><p id="emptyCopy">Data yang tersimpan akan muncul di halaman ini.</p><a class="refresh empty-action" href="form.html"><svg aria-hidden="true"><use href="#i-send"/></svg>Input data pertama</a></div></div>
+<div id="emptyState" class="state" hidden><div class="state-inner"><span class="state-icon"><svg aria-hidden="true"><use href="#i-empty"/></svg></span><h2 id="emptyTitle">Belum ada data</h2><p id="emptyCopy">Data yang dicatat oleh petugas akan muncul di halaman ini.</p></div></div>
 <div id="errorState" class="state" hidden><div class="state-inner"><span class="state-icon error"><svg aria-hidden="true"><use href="#i-alert"/></svg></span><h2>Data belum dapat dimuat</h2><p id="errorCopy">Pastikan server dan koneksi Google Sheets tersedia.</p><button class="retry" id="retryButton" type="button">Coba lagi</button></div></div>
 <div class="table-wrap" id="tableWrap" hidden><table><thead><tr><th>Nama</th><th>Jenis kelamin</th><th>Tanggal lahir</th><th>Tanggal ukur</th><th>Tinggi</th><th>Posisi ukur</th><th>Status catatan</th></tr></thead><tbody id="recordRows"></tbody></table></div>
 <div class="state no-match" id="noMatch" hidden><div class="state-inner"><h2>Tidak ada hasil</h2><p>Coba kata kunci atau filter yang berbeda.</p></div></div>
 <div class="panel-foot"><span>Menampilkan maksimal 10 catatan terbaru.</span><span id="resultCount">Memuat…</span></div>
 </section></main>
 <script>
-if(localStorage.getItem("stuntbot_logged")!=="true")window.location.replace("../index.html");
 const $=id=>document.getElementById(id), rows=$("recordRows"), filters=[...document.querySelectorAll(".filter")];
 let records=[],activeFilter="all";
-$("logoutButton").addEventListener("click",()=>{localStorage.removeItem("stuntbot_logged");window.location.replace("../index.html")});
+Promise.all([fetch("/api/user/session"),fetch("/api/admin/session")]).then(responses=>{if(!responses.some(response=>response.ok))window.location.replace("../index.html")});
+$("logoutButton").addEventListener("click",async()=>{await Promise.all([fetch("/api/user/logout",{method:"POST"}),fetch("/api/admin/logout",{method:"POST"})]);window.location.replace("../index.html")});
 $("searchInput").addEventListener("input",renderRecords);
 filters.forEach(button=>button.addEventListener("click",()=>{activeFilter=button.dataset.filter;filters.forEach(item=>item.setAttribute("aria-pressed",String(item===button)));renderRecords()}));
 $("refreshButton").addEventListener("click",loadRecords);$("retryButton").addEventListener("click",loadRecords);

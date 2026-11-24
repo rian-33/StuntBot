@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
@@ -37,38 +37,40 @@
     <div class="auth-wrap">
       <header class="welcome"><h2 id="welcomeTitle">Selamat datang kembali</h2><p id="welcomeCopy">Masuk untuk melanjutkan pemantauan tumbuh kembang.</p></header>
       <div class="card">
-        <div class="tabs" role="tablist" aria-label="Pilih akses">
+        <div class="tabs" role="tablist" aria-label="Pilih akses pengguna">
           <button class="tab" id="loginTab" type="button" role="tab" aria-selected="true">Masuk</button>
           <button class="tab" id="signupTab" type="button" role="tab" aria-selected="false">Buat akun</button>
         </div>
         <form class="form" id="loginForm">
-          <h3 class="form-title">Masuk ke akun Anda</h3><p class="form-subtitle">Senang melihat Anda kembali.</p>
-          <div class="field"><label for="loginEmail">Email</label><div class="control"><svg class="leading" aria-hidden="true"><use href="#icon-mail"/></svg><input id="loginEmail" name="email" type="email" autocomplete="email" placeholder="nama@email.com" required></div></div>
-          <div class="field"><label for="loginPassword">Kata sandi</label><div class="control"><svg class="leading" aria-hidden="true"><use href="#icon-lock"/></svg><input id="loginPassword" name="password" type="password" autocomplete="current-password" placeholder="Masukkan kata sandi" required><button class="reveal" type="button" data-toggle-password="loginPassword" aria-label="Tampilkan kata sandi"><svg aria-hidden="true"><use href="#icon-eye"/></svg></button></div></div>
-          <div class="form-meta"><label class="check"><input id="rememberEmail" type="checkbox"> Ingat email</label><button class="text-link" id="forgotPassword" type="button">Lupa kata sandi?</button></div>
+          <h3 class="form-title">Masuk ke akun Anda</h3><p class="form-subtitle">Masukkan Gmail, kata sandi, dan nomor HP yang terdaftar pada akun Anda.</p>
+          <div class="field"><label for="loginEmail">Gmail</label><div class="control"><svg class="leading" aria-hidden="true"><use href="#icon-mail"/></svg><input id="loginEmail" name="email" type="email" autocomplete="email" placeholder="nama@gmail.com" required></div></div>
+          <div class="field"><label for="loginPassword">Kata sandi</label><div class="control"><svg class="leading" aria-hidden="true"><use href="#icon-lock"/></svg><input id="loginPassword" name="password" type="password" autocomplete="current-password" placeholder="Masukkan kata sandi" required></div></div>
+          <div class="field"><label for="loginPhone">Nomor HP orang tua/wali</label><div class="control"><svg class="leading" aria-hidden="true"><use href="#icon-user"/></svg><input id="loginPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Contoh: 08123456789" required></div></div>
           <button class="primary" type="submit">Masuk <svg aria-hidden="true"><use href="#icon-arrow"/></svg></button>
           <p class="notice" id="loginNotice" role="status" aria-live="polite"></p>
-          <p class="switch-copy">Belum punya akun? <button type="button" data-switch="signup">Daftar sekarang</button></p>
+          <p class="switch-copy">Belum punya akun? <button type="button" data-switch="signup">Buat akun</button></p>
         </form>
         <form class="form" id="signupForm" hidden>
           <h3 class="form-title">Buat akun StuntBot</h3><p class="form-subtitle">Mulai pantau tumbuh kembang dengan lebih teratur.</p>
           <div class="field"><label for="signupName">Nama lengkap</label><div class="control"><svg class="leading" aria-hidden="true"><use href="#icon-user"/></svg><input id="signupName" name="name" autocomplete="name" placeholder="Nama Anda" required></div></div>
-          <div class="field"><label for="signupEmail">Email</label><div class="control"><svg class="leading" aria-hidden="true"><use href="#icon-mail"/></svg><input id="signupEmail" name="email" type="email" autocomplete="email" placeholder="nama@email.com" required></div></div>
+          <div class="field"><label for="signupEmail">Gmail</label><div class="control"><svg class="leading" aria-hidden="true"><use href="#icon-mail"/></svg><input id="signupEmail" name="email" type="email" autocomplete="email" placeholder="nama@gmail.com" required></div></div>
+          <div class="field"><label for="signupPhone">Nomor HP orang tua/wali</label><div class="control"><svg class="leading" aria-hidden="true"><use href="#icon-user"/></svg><input id="signupPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Contoh: 08123456789" required></div></div>
           <div class="field"><label for="signupPassword">Kata sandi</label><div class="control"><svg class="leading" aria-hidden="true"><use href="#icon-lock"/></svg><input id="signupPassword" name="password" type="password" autocomplete="new-password" minlength="8" placeholder="Minimal 8 karakter" required><button class="reveal" type="button" data-toggle-password="signupPassword" aria-label="Tampilkan kata sandi"><svg aria-hidden="true"><use href="#icon-eye"/></svg></button></div><div class="strength"><span id="strengthLabel">Gunakan minimal 8 karakter</span><span class="strength-bar"><i id="strengthBar"></i></span></div></div>
           <div class="field"><label for="confirmPassword">Ulangi kata sandi</label><div class="control"><svg class="leading" aria-hidden="true"><use href="#icon-lock"/></svg><input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" placeholder="Ulangi kata sandi" required></div></div>
           <button class="primary" type="submit">Buat akun <svg aria-hidden="true"><use href="#icon-arrow"/></svg></button>
           <p class="notice" id="signupNotice" role="status" aria-live="polite"></p>
-          <p class="legal">Dengan mendaftar, Anda setuju menggunakan StuntBot untuk pencatatan dan pemantauan data.</p>
+          <p class="legal">Verifikasi admin diperlukan untuk mengaktifkan chat Telegram. Anda tetap dapat masuk untuk melihat data dan jadwal.</p>
           <p class="switch-copy">Sudah punya akun? <button type="button" data-switch="login">Masuk</button></p>
         </form>
       </div>
+      <p class="admin-entry">Petugas admin? <a href="/pages/admin.html">Masuk melalui halaman admin</a></p>
     </div>
   </section>
 </main>
 <script>
-  const ACCOUNT_KEY = "stuntbot_account";
   const loginForm = document.getElementById("loginForm");
   const signupForm = document.getElementById("signupForm");
+  const loginPhone = document.getElementById("loginPhone");
   const loginNotice = document.getElementById("loginNotice");
   const signupNotice = document.getElementById("signupNotice");
 
@@ -78,75 +80,87 @@
     signupForm.hidden = !isSignup;
     document.getElementById("loginTab").setAttribute("aria-selected", String(!isSignup));
     document.getElementById("signupTab").setAttribute("aria-selected", String(isSignup));
-    document.getElementById("welcomeTitle").textContent = isSignup ? "Mulai bersama StuntBot" : "Selamat datang kembali";
-    document.getElementById("welcomeCopy").textContent = isSignup ? "Buat akun untuk mulai mencatat pertumbuhan anak." : "Masuk untuk melanjutkan pemantauan tumbuh kembang.";
-    document.title = (isSignup ? "Daftar" : "Masuk") + " | StuntBot";
+    document.getElementById("welcomeTitle").textContent = isSignup ? "Buat akun StuntBot" : "Selamat datang kembali";
+    document.getElementById("welcomeCopy").textContent = isSignup
+      ? "Daftarkan identitas dan nomor HP Anda."
+      : "Masuk dengan Gmail dan kata sandi akun Anda.";
   }
 
   document.getElementById("loginTab").addEventListener("click", () => showMode("login"));
   document.getElementById("signupTab").addEventListener("click", () => showMode("signup"));
-  document.querySelectorAll("[data-switch]").forEach(button => button.addEventListener("click", () => showMode(button.dataset.switch)));
-  document.querySelectorAll("[data-toggle-password]").forEach(button => button.addEventListener("click", () => {
-    const input = document.getElementById(button.dataset.togglePassword);
-    input.type = input.type === "password" ? "text" : "password";
-    button.setAttribute("aria-label", input.type === "password" ? "Tampilkan kata sandi" : "Sembunyikan kata sandi");
-  }));
-
-  const savedEmail = localStorage.getItem("stuntbot_email");
-  if (savedEmail) {
-    document.getElementById("loginEmail").value = savedEmail;
-    document.getElementById("rememberEmail").checked = true;
-  }
-  document.getElementById("forgotPassword").addEventListener("click", () => {
-    loginNotice.className = "notice";
-    loginNotice.textContent = "Untuk mengatur ulang akun lokal ini, buat akun baru menggunakan email yang berbeda.";
+  document.querySelectorAll("[data-switch]").forEach(button => {
+    button.addEventListener("click", () => showMode(button.dataset.switch));
   });
 
-  document.getElementById("signupPassword").addEventListener("input", event => {
-    const value = event.target.value;
-    const score = (value.length >= 8) + (/[A-Z]/.test(value)) + (/[0-9]/.test(value)) + (/[^A-Za-z0-9]/.test(value));
-    const bar = document.getElementById("strengthBar");
-    const label = document.getElementById("strengthLabel");
-    bar.style.width = (score * 25) + "%";
-    bar.style.background = score < 2 ? "#e47768" : score < 4 ? "#e5a154" : "#36a27f";
-    label.textContent = !value ? "Gunakan minimal 8 karakter" : score < 2 ? "Kata sandi lemah" : score < 4 ? "Kata sandi cukup kuat" : "Kata sandi kuat";
-  });
-
-  signupForm.addEventListener("submit", event => {
+  signupForm.addEventListener("submit", async event => {
     event.preventDefault();
-    signupNotice.className = "notice error";
-    const name = document.getElementById("signupName").value.trim();
-    const email = document.getElementById("signupEmail").value.trim().toLowerCase();
-    const password = document.getElementById("signupPassword").value;
-    const confirmation = document.getElementById("confirmPassword").value;
-    if (password.length < 8) return signupNotice.textContent = "Kata sandi harus minimal 8 karakter.";
-    if (password !== confirmation) return signupNotice.textContent = "Konfirmasi kata sandi belum cocok.";
-    localStorage.setItem(ACCOUNT_KEY, JSON.stringify({ name, email, password }));
-    signupNotice.className = "notice success";
-    signupNotice.textContent = "Akun berhasil dibuat. Mengarahkan ke dashboard…";
-    localStorage.setItem("stuntbot_logged", "true");
-    window.setTimeout(() => window.location.href = "pages/home.html", 650);
-  });
-
-  loginForm.addEventListener("submit", event => {
-    event.preventDefault();
-    loginNotice.className = "notice error";
-    const email = document.getElementById("loginEmail").value.trim().toLowerCase();
-    const password = document.getElementById("loginPassword").value;
-    const account = JSON.parse(localStorage.getItem(ACCOUNT_KEY) || "null");
-    if (!account || account.email !== email || account.password !== password) {
-      loginNotice.textContent = "Email atau kata sandi tidak sesuai.";
+    signupNotice.className = "notice";
+    signupNotice.textContent = "Membuat akun…";
+    const form = new FormData(signupForm);
+    const password = String(form.get("password") || "");
+    if (password !== String(form.get("confirmPassword") || "")) {
+      signupNotice.className = "notice error";
+      signupNotice.textContent = "Konfirmasi kata sandi belum cocok.";
       return;
     }
-    if (document.getElementById("rememberEmail").checked) localStorage.setItem("stuntbot_email", email);
-    else localStorage.removeItem("stuntbot_email");
-    localStorage.setItem("stuntbot_logged", "true");
-    loginNotice.className = "notice success";
-    loginNotice.textContent = "Berhasil masuk. Mengarahkan ke dashboard…";
-    window.setTimeout(() => window.location.href = "pages/home.html", 450);
+
+    const button = signupForm.querySelector('button[type="submit"]');
+    button.disabled = true;
+    try {
+      const response = await fetch("/api/user/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.get("name"),
+          email: form.get("email"),
+          password,
+          phone: form.get("phone"),
+        }),
+      });
+      const result = await response.json();
+      if (!response.ok || !result.success) throw new Error(result.message || "Akun gagal dibuat.");
+      signupForm.reset();
+      showMode("login");
+      loginNotice.className = "notice success";
+      loginNotice.textContent = result.message;
+    } catch (error) {
+      signupNotice.className = "notice error";
+      signupNotice.textContent = error.message || "Server tidak dapat dihubungi.";
+    } finally {
+      button.disabled = false;
+    }
   });
 
-  if (localStorage.getItem("stuntbot_logged") === "true") window.location.replace("pages/home.html");
+  loginForm.addEventListener("submit", async event => {
+    event.preventDefault();
+    loginNotice.className = "notice";
+    loginNotice.textContent = "Memeriksa akun dan status nomor HP…";
+    const button = loginForm.querySelector('button[type="submit"]');
+    const form = new FormData(loginForm);
+    button.disabled = true;
+    try {
+      const response = await fetch("/api/user/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.get("email"), password: form.get("password"), phone: loginPhone.value }),
+      });
+      const result = await response.json();
+      if (!response.ok || !result.success) throw new Error(result.message || "Login gagal.");
+      window.location.replace("pages/home.html");
+    } catch (error) {
+      loginNotice.className = "notice error";
+      loginNotice.textContent = error.message || "Server tidak dapat dihubungi.";
+    } finally {
+      button.disabled = false;
+    }
+  });
+
+  fetch("/api/user/session").then(response => {
+    if (response.ok) window.location.replace("pages/home.html");
+  });
 </script>
 </body>
 </html>
+
+
+
