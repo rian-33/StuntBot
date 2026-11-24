@@ -172,9 +172,11 @@ async function loadUserTelegramLink(openTelegramWhenReady = false) {
     if (result.approved && result.ready && result.url) {
       telegramButton.textContent = result.connected ? "Chat StuntBot" : "Hubungkan dengan StuntBot";
       telegramButton.dataset.chatUrl = result.url;
-      telegramStatus.textContent = result.connected
-        ? "Nomor sudah terhubung dengan bot."
-        : "Tautan pairing siap. Buka Telegram dan bagikan nomor HP yang sama.";
+      telegramStatus.textContent = result.fallback
+        ? "Tautan pairing dari admin siap. Buka Telegram dan bagikan nomor HP yang sama."
+        : (result.connected
+          ? "Nomor sudah terhubung dengan bot."
+          : "Tautan pairing siap. Buka Telegram dan bagikan nomor HP yang sama.");
       if (openTelegramWhenReady) window.location.href = result.url;
       return;
     }
@@ -231,5 +233,7 @@ loadUserTelegramLink();
 </script>
 </body>
 </html>
+
+
 
 

@@ -18,7 +18,7 @@ function handleTelegramUpdate(update) {
     return;
   }
 
-  if (text === "/start" || text.indexOf("/start ") === 0 || text === "/help") {
+  if (/^\/(start|help)(?:@\w+)?(?:\s|$)/i.test(text)) {
     sendContactRequest_(chatId, "Selamat datang! Bagikan nomor HP Anda untuk menghubungkan akun Telegram dengan data pendataan.");
     return;
   }
@@ -97,4 +97,5 @@ function formatRecord_(record) {
     "<b>Posisi ukur:</b> " + escapeHtml_(record.posisiUkur) + "\n" +
     "<b>Status stunting:</b> " + (record.isStunted ? "Ya" : "Tidak");
 }
+
 

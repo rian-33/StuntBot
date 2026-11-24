@@ -4,6 +4,7 @@ const fetch = require("node-fetch");
 const { createChildRecord } = require("../models/childRecord");
 
 const LOG_FILE = path.join(__dirname, "..", "data.log");
+const telegramPairingLinks = new Map();
 
 function appsScriptErrorMessage(message, fallback) {
   const text = String(message || "");
@@ -69,7 +70,10 @@ exports.handleTelegramLink = async (req, res) => {
     if (result.status !== "ok" || !result.url) {
       throw new Error(appsScriptErrorMessage(result.message, "Apps Script gagal membuat tautan."));
     }
-    return res.json({ success: true, url: result.url });
+    const url = validateTelegramUrl(result.url);
+    const lifetime = Number(result.expiresInSeconds) > 0 ? Number(result.expiresInSeconds) : 600;
+    telegramPairingLinks.set(phone, { url, expiresAt: Date.now() + lifetime * 1000 });
+    return res.json({ success: true, url });
   } catch (error) {
     console.error("Telegram link error:", error.message);
     return res.status(502).json({ success: false, message: error.message || "Tautan bot Telegram belum dapat dibuat." });
@@ -101,15 +105,72 @@ exports.lookupTelegramStatus = async value => {
 };
 
 exports.handleTelegramStatus = async (req, res) => {
+  const phone = normalizeTelegramPhone(req.userSession && req.userSession.phone);
+  if (!/^\d{8,15}$/.test(phone)) {
+    return res.status(400).json({
+      success: false,
+      message: "Nomor HP akun tidak tersedia. Keluar lalu masuk kembali sebagai pengguna."
+    });
+  }
+
+  let status = null;
+  let statusError = null;
   try {
-    const phone = req.userSession ? req.userSession.phone : (req.body && req.body.phone);
-    const result = await exports.lookupTelegramStatus(phone);
-    return res.json({ success: true, approved: result.approved === true, ready: result.ready === true, connected: result.connected === true, url: result.url || null });
+    status = await exports.lookupTelegramStatus(phone);
   } catch (error) {
-    console.error("Telegram status error:", error.message);
-    return res.status(502).json({ success: false, message: error.message || "Status Telegram tidak dapat diperiksa." });
+    statusError = error;
+  }
+
+  const cachedPair = telegramPairingLinks.get(phone);
+  if (cachedPair && cachedPair.expiresAt > Date.now() &&
+      (statusError || !status.approved || !status.ready || !status.url)) {
+    return res.json({
+      success: true,
+      approved: true,
+      ready: true,
+      connected: false,
+      url: cachedPair.url,
+      fallback: true
+    });
+  }
+
+  if (statusError) {
+    if (!/Masukkan nomor HP 8–15 digit/.test(statusError.message)) {
+      console.error("Telegram status error:", statusError.message);
+    }
+    return res.status(502).json({
+      success: false,
+      message: statusError.message || "Status Telegram tidak dapat diperiksa."
+    });
+  }
+
+  if (cachedPair && cachedPair.expiresAt <= Date.now()) telegramPairingLinks.delete(phone);
+  try {
+    return res.json({
+      success: true,
+      approved: status.approved === true,
+      ready: status.ready === true,
+      connected: status.connected === true,
+      url: status.url ? validateTelegramUrl(status.url) : null
+    });
+  } catch (error) {
+    console.error("Invalid Telegram URL:", error.message);
+    return res.status(502).json({ success: false, message: "Tautan Telegram yang diterima tidak valid." });
   }
 };
+
+function validateTelegramUrl(value) {
+  let url;
+  try {
+    url = new URL(String(value || ""));
+  } catch (error) {
+    throw new Error("Tautan Telegram tidak valid.");
+  }
+  if (url.protocol !== "https:" || url.hostname !== "t.me" || !url.pathname.startsWith("/")) {
+    throw new Error("Tautan Telegram tidak valid.");
+  }
+  return url.toString();
+}
 
 function normalizeTelegramPhone(value) {
   let phone = String(value || "").replace(/\D/g, "");
@@ -157,4 +218,6 @@ exports.handleSubmit = async (req, res) => {
     return res.status(502).json({ success: false, message: error.message || "Gagal menyimpan data ke Google Sheets." });
   }
 };
+
+
 

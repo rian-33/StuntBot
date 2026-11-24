@@ -117,7 +117,7 @@ app.use(express.static(PUBLIC_DIR));
 app.post("/submit", adminOnly, formController.handleSubmit);
 app.get("/api/records", userOrAdmin, formController.handleList);
 app.post("/api/telegram/link", adminOnly, formController.handleTelegramLink);
-app.post("/api/telegram/status", userOrAdmin, formController.handleTelegramStatus);
+app.post("/api/telegram/status", userOnly, formController.handleTelegramStatus);
 app.get("/api/schedules", userOrAdmin, (req, res) => res.json({ success: true, data: require("./models/schedule").list() }));
 app.get("/api/admin/schedules", adminOnly, (req, res) => res.json({ success: true, data: require("./models/schedule").list() }));
 app.post("/api/admin/schedules", adminOnly, (req, res) => {
@@ -132,4 +132,5 @@ app.delete("/api/admin/schedules/:id", adminOnly, (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
+
 

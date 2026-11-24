@@ -37,3 +37,16 @@ function getWebhookSecret_() {
     })
     .join("");
 }
+/** The versioned /exec URL from Manage deployments; never use the /dev test URL for Telegram. */
+function getWebAppUrl_() {
+  var url = PropertiesService.getScriptProperties().getProperty("WEB_APP_URL");
+  if (!url) {
+    throw new Error("Atur WEB_APP_URL pada Script Properties dengan URL Web App yang berakhir /exec.");
+  }
+  url = url.trim();
+  if (!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(url)) {
+    throw new Error("WEB_APP_URL harus URL deployment produksi yang berakhir /exec, bukan /dev.");
+  }
+  return url;
+}
+

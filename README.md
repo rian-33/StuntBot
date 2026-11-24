@@ -100,11 +100,13 @@ Jadwal harus berisi tanggal valid, waktu format `JJ:MM`, dan nama puskesmas. Lok
 Untuk mengaktifkan integrasi Telegram:
 
 1. Simpan token bot pada Apps Script → Project Settings → Script Properties dengan nama TELEGRAM_TOKEN. Jangan simpan token di Config.gs.
-2. Pastikan Code.gs, Config.gs, Sheets.gs, Session.gs, Telegram.gs, dan Chatbot.gs versi terbaru ada di project Apps Script yang sama.
-3. Deploy sebagai Web app, jalankan sebagai pemilik project, lalu isi SHEETS_ENDPOINT pada server dengan URL deployment yang berakhir /exec.
-4. Jalankan fungsi setupTelegramWebhook satu kali dari editor Apps Script setelah deployment dibuat atau diperbarui.
-5. Admin masuk ke dashboard, masukkan nomor HP, lalu tekan Hubungkan dengan bot. Pengguna masuk dengan akun yang memakai nomor HP yang sama. Setelah admin membuat pairing, tombol Telegram akan membuka tautan pairing selama 10 menit.
-6. Di Telegram, pengguna menekan Start dan Bagikan nomor HP saya. Telegram memerlukan konfirmasi ini untuk memastikan nomor yang dibagikan adalah milik pengguna. Setelah nomor cocok, bot menghubungkan akun dan tombol berubah menjadi Chat StuntBot.
+2. Simpan URL Web App produksi dari Manage deployments sebagai Script Property WEB_APP_URL. URL harus berakhir /exec (jangan gunakan URL Test deployments yang berakhir /dev).
+3. Pastikan Code.gs, Config.gs, Sheets.gs, Session.gs, Telegram.gs, dan Chatbot.gs versi terbaru ada di project Apps Script yang sama.
+4. Deploy sebagai Web app, jalankan sebagai pemilik project, lalu isi SHEETS_ENDPOINT pada server dengan URL deployment yang berakhir /exec.
+5. Jalankan fungsi setupTelegramWebhook satu kali dari editor Apps Script setelah deployment dibuat atau diperbarui.
+6. Jika bot tidak membalas /start, jalankan diagnoseTelegramWebhook dari dropdown fungsi dan lihat pendingUpdateCount serta lastErrorMessage pada Execution log. URL webhook tidak dicetak agar key tetap tersembunyi.
+7. Admin masuk ke dashboard, masukkan nomor HP, lalu tekan Hubungkan dengan bot. Pengguna masuk dengan akun yang memakai nomor HP yang sama. Setelah admin membuat pairing, tombol Telegram akan membuka tautan pairing selama 10 menit.
+8. Di Telegram, pengguna menekan Start dan Bagikan nomor HP saya. Telegram memerlukan konfirmasi ini untuk memastikan nomor yang dibagikan adalah milik pengguna. Setelah nomor cocok, bot menghubungkan akun dan tombol berubah menjadi Chat StuntBot.
 
 Jika muncul pesan NIK pada bagian Telegram, deployment aktif masih memakai versi lama. Buat New version pada Manage deployments dan pastikan SHEETS_ENDPOINT server menunjuk ke deployment yang sama. Sesi login pengguna berlaku 12 jam. Pastikan hosting menyediakan penyimpanan file persisten untuk `users.json`; jika file tersebut hilang, akun pengguna perlu didaftarkan kembali.
 
@@ -113,4 +115,6 @@ Jika muncul pesan NIK pada bagian Telegram, deployment aktif masih memakai versi
 - Sesi admin berlaku 8 jam dan disimpan di memori server; sesi akan berakhir jika server dimulai ulang. Gunakan HTTPS saat aplikasi dipasang di lingkungan produksi.
 - Jangan membagikan kredensial admin atau menyimpan file `.env` di repository.
 - Aplikasi ini membantu pencatatan dan pemantauan, bukan pengganti penilaian tenaga kesehatan.
+
+
 
